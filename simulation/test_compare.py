@@ -11,6 +11,34 @@ from compare import compare, write_reports
 
 
 class ComparisonTests(unittest.TestCase):
+    def test_route_relative_faults_cap_travel_without_shortening_latency(self):
+        grid = ("########", "#S....G#", "########")
+        with patch("compare.generate_environment", return_value=grid):
+            report = compare(count=1, fault_tick=99, delays=((2, 1),),
+                             placements=("last", "middle", "first", "last"))
+        self.assertEqual(report["config"]["placements"], ["first", "middle", "last"])
+        rows = [r for r in report["trials"] if r["scenario"] == "link_loss" and r["communication_delay"] == 2]
+        self.assertEqual([r["scheduled_fault_tick"] for r in rows], [1, 3, 5])
+        self.assertEqual([r["remaining_cells"] for r in rows], [5, 3, 1])
+        self.assertEqual([r["extra_cells"] for r in rows], [3, 3, 1])
+        self.assertEqual([r["latency_ticks"] for r in rows], [3, 3, 3])
+        self.assertEqual([r["goal_at_stop"] for r in rows], [False, True, True])
+        self.assertEqual([r["fault_position"] for r in rows], [[1, 1], [3, 1], [5, 1]])
+        self.assertEqual(len(report["summary"]), 18)
+
+    def test_short_and_blocked_routes_keep_placement_denominators_separate(self):
+        grids = [("####", "#SG#", "####"), ("#####", "#S#G#", "#####")]
+        with patch("compare.generate_environment", side_effect=grids):
+            report = compare(count=2, fault_tick=99, placements=("fixed", "first", "middle", "last"))
+        for row in report["summary"]:
+            self.assertEqual(row["no_route"], 1)
+            self.assertEqual(row["injected"], 0 if row["placement"] == "fixed" else 1)
+            self.assertEqual(row["fault_after_arrival"], 1 if row["placement"] == "fixed" else 0)
+        for trial in report["trials"]:
+            if trial["fault_injected"]:
+                self.assertEqual(trial["remaining_cells"], 1)
+                self.assertLessEqual(trial["extra_cells"], 1)
+
     def test_paired_maps_and_honest_denominators(self):
         grids = [("########", "#S....G#", "########"),
                  ("#####", "#S#G#", "#####"), ("####", "#SG#", "####")]
@@ -68,14 +96,15 @@ class ComparisonTests(unittest.TestCase):
             html = (output/"report.html").read_text(encoding="utf-8")
             self.assertIn("first seed 20261030", html)
             self.assertIn('href="summary.csv"', html)
-            for args in (["--maps", "0"], ["--delays", "bad"], ["--delays", "2:101"]):
+            for args in (["--maps", "0"], ["--delays", "bad"], ["--delays", "2:101"], ["--placements", "unknown"]):
                 invalid = subprocess.run([sys.executable, script, *args], capture_output=True)
                 self.assertNotEqual(invalid.returncode, 0)
 
     def test_invalid_configuration(self):
         for kwargs in (dict(count=0), dict(count=1001), dict(count=True), dict(seed="42"),
                        dict(fault_tick=0), dict(fault_tick=1.5), dict(delays=[]),
-                       dict(delays=[(2,)]), dict(delays=[(-1, 0)]), dict(delays=[(True, 0)])):
+                       dict(delays=[(2,)]), dict(delays=[(-1, 0)]), dict(delays=[(True, 0)]),
+                       dict(placements=[]), dict(placements=["unknown"])):
             with self.assertRaises(ValueError):
                 compare(**kwargs)
 

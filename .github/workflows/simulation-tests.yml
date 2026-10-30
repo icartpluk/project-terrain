@@ -24,7 +24,7 @@ jobs:
         run: python simulation/batch.py --trials 100 --seed 20261030 --output results
 
       - name: Generate response-delay comparison report
-        run: python simulation/compare.py --maps 10 --output results/delay-comparison
+        run: python simulation/compare.py --maps 10 --placements fixed,first,middle,last --output results/delay-comparison
 
       - name: Check animation playback controller
         run: |
