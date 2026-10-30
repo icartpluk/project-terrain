@@ -32,7 +32,8 @@ def render_html(data):
     template = Path(__file__).with_name("replay.html").read_text(encoding="utf-8")
     # Keep embedded data inert even if a future grid contains HTML characters.
     payload = json.dumps(data, sort_keys=True).replace("<", "\\u003c")
-    return template.replace("__REPLAY_DATA__", payload)
+    editor = Path(__file__).with_name("editor.js").read_text(encoding="utf-8")
+    return template.replace("__EDITOR_CODE__", editor).replace("__REPLAY_DATA__", payload)
 
 
 def main():

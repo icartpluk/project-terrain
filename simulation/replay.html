@@ -20,6 +20,10 @@
   .legend { display: flex; flex-wrap: wrap; gap: 16px; }
   .legend span { white-space: nowrap; }
   input { max-width: 100%; }
+  #editor { display: grid; gap: 2px; max-width: 660px; margin: 12px 0; }
+  #editor button { padding: 0; aspect-ratio: 1; min-width: 0; border-radius: 2px; font-size: .8rem; background: #202f3b; color: white; }
+  #editor button.wall { background: #536371; }
+  #editor button:disabled { opacity: 1; }
 </style>
 <main>
   <h1>TERRAIN / Underground grid</h1>
@@ -40,6 +44,16 @@
     <label>Tick duration <select id="speed"><option value="600">0.6 seconds</option><option value="200">0.2 seconds</option><option value="1200">1.2 seconds</option></select></label>
   </div>
   <div id="status" role="status" aria-live="polite"></div>
+  <details>
+    <summary>Edit this map</summary>
+    <p>Choose a tool and click a cell below. Changes start a new replay. The boundary and start stay fixed. Switching maps discards edits.</p>
+    <div class="controls">
+      <label>Tool <select id="edit-tool"><option value="obstacle">Toggle obstacle</option><option value="goal">Set destination</option></select></label>
+      <button id="restore-map">Restore map</button>
+    </div>
+    <p id="edit-message" role="status" aria-live="polite"></p>
+    <div id="editor" aria-label="Map editing cells"></div>
+  </details>
   <p id="detail"></p>
   <svg id="map" role="img" aria-labelledby="map-title map-desc"></svg>
   <div class="legend"><span>● R = robot</span><span>G = destination</span><span>S = start</span><span>▧ = rock / obstacle</span><span>O = inert foam marker (traversable)</span><span>· = traveled path</span></div>
@@ -73,7 +87,7 @@ function draw() {
     finished ? trial.status.replaceAll("_", " ") : index ? "MOVING" : "READY";
   el("status").textContent = status;
   el("status").className = stopped || trial.status === "NO_ROUTE" ? "stop" : finished ? "done" : "";
-  el("map-info").textContent = data.seed === null || data.seed === undefined
+  el("map-info").textContent = data.edited ? "Custom map (unsaved)" : data.seed === null || data.seed === undefined
     ? "Original demo" : `Seed ${data.seed} · ${worldIndex}/${worlds.length - 1} seeded maps`;
   el("detail").textContent = `Tick ${event ? event.tick : 0} · Position (${position.join(", ")}) · ${index}/${trial.events.length} recorded events · Fault tick ${data.fault_tick}`;
   el("seek").max = trial.events.length;
@@ -119,10 +133,14 @@ function changeWorld(i) {
   trial = data.trials[Number(el("scenario").value)];
   index = 0;
   draw();
+  drawEditor();
+  el("edit-message").textContent = "";
 }
 el("world").onchange = () => changeWorld(Number(el("world").value));
 el("new-map").disabled = worlds.length < 2;
 el("new-map").onclick = () => changeWorld(worldIndex + 1 < worlds.length ? worldIndex + 1 : 1);
+__EDITOR_CODE__
 draw();
+drawEditor();
 </script>
 </html>
