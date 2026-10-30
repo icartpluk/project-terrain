@@ -1,0 +1,21 @@
+
+name: Simulation tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run simulation unit tests
+        run: python -m unittest discover -s simulation -v
+
+      - name: Run 100 seeded simulation trials
+        run: python simulation/batch.py --trials 100 --seed 20261030 --output results
