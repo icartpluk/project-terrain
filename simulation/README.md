@@ -34,6 +34,14 @@ python simulation/animate.py --seed 42 --maps 30
 
 Tick 1 stops before the first move. A fault scheduled after arrival is not injected; the display reports GOAL REACHED instead of claiming a safety stop. Randomized batch reports remain available through `batch.py`.
 
+## Trigger a stop during playback
+
+Choose **Normal navigation** and press **Play**. While playback runs, click **Trigger link loss**, **Trigger E-stop**, or **Trigger unauthorized command**. The robot freezes at its current cell, the pending movement timer is canceled, and the red **SAFE STOP** banner names the cause.
+
+Play, Step, and the tick slider remain disabled after a live stop. **Reset** starts a new replay from S. Changing scenario or map, editing a cell, or loading a map also starts a fresh replay and clears the live stop. These are simulated replay actions, not hardware safety resets. The buttons are disabled while paused, before Play, after arrival, when no route exists, or after any safety stop.
+
+The scenario selector still demonstrates scheduled faults at the configured fault tick. Live buttons inject a fault at the currently displayed position instead. Saved map files continue to contain only geometry and scheduled fault timing; live-stop history is not saved.
+
 ## Edit a map
 
 Open **Edit this map** below the status banner. Choose **Toggle obstacle** and click a cell in the editing grid to add or remove an obstacle. Choose **Set destination** and click a cell to move G there (including clearing an obstacle). Start S and boundary cells stay fixed; obstacles cannot replace G. Cells are keyboard-accessible buttons.

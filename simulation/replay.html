@@ -16,6 +16,7 @@
   #status { padding: 16px; border: 3px solid #75d6ff; border-radius: 8px; font-weight: 700; }
   #status.stop { color: #fff; background: #8d2230; border-color: #ffb4b4; }
   #status.done { color: #d5ffe4; background: #175137; border-color: #78e4a4; }
+  .safety button { background: #8d2230; color: white; border: 2px solid #ffb4b4; }
   #map { display: block; width: 100%; max-height: 60vh; margin: 18px auto; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; }
   .legend span { white-space: nowrap; }
@@ -46,6 +47,12 @@
     <label>Tick duration <select id="speed"><option value="600">0.6 seconds</option><option value="200">0.2 seconds</option><option value="1200">1.2 seconds</option></select></label>
   </div>
   <div id="status" role="status" aria-live="polite"></div>
+  <div class="controls safety" aria-label="Simulated safety controls">
+    <button id="live-link">Trigger link loss</button>
+    <button id="live-estop">Trigger E-stop</button>
+    <button id="live-unauthorized">Trigger unauthorized command</button>
+  </div>
+  <p>During Play, trigger a simulated fault to freeze the robot at its current cell. Reset starts a new replay after a live stop.</p>
   <details>
     <summary>Edit this map</summary>
     <p>Choose a tool and click a cell below. Changes start a new replay. The boundary and start stay fixed. Switching maps discards edits.</p>
@@ -72,6 +79,8 @@ let loadRevision = 0;
 const el = id => document.getElementById(id);
 const reasons = {COMMUNICATION_LOSS: "LINK LOSS", EMERGENCY_STOP: "E-STOP", UNAUTHORIZED_COMMAND: "UNAUTHORIZED COMMAND"};
 let trial = data.trials[0], index = 0, timer = null;
+let liveStop = null;
+const liveButtons = ["live-link","live-estop","live-unauthorized"];
 const ns = "http://www.w3.org/2000/svg";
 function svg(tag, attrs, text) {
   const node = document.createElementNS(ns, tag);
@@ -80,9 +89,23 @@ function svg(tag, attrs, text) {
   el("map").appendChild(node);
   return node;
 }
-function pause() { clearTimeout(timer); timer = null; el("play").textContent = "Play"; }
+function pause() {
+  clearTimeout(timer); timer = null; el("play").textContent = "Play";
+  liveButtons.forEach(id=>{el(id).disabled=true;});
+}
+function triggerStop(reason) {
+  if(timer===null || liveStop || index===trial.events.length) return;
+  const event=trial.events[index-1];
+  liveStop={tick:event?event.tick:0,event:reason,
+    position:[...(event?event.position:data.start)]};
+  loadRevision++; // A pending file read must not clear this stop.
+  pause(); draw();
+}
+el("live-link").onclick=()=>triggerStop("COMMUNICATION_LOSS");
+el("live-estop").onclick=()=>triggerStop("EMERGENCY_STOP");
+el("live-unauthorized").onclick=()=>triggerStop("UNAUTHORIZED_COMMAND");
 function draw() {
-  const event = trial.events[index - 1];
+  const event = liveStop || trial.events[index - 1];
   const position = event ? event.position : data.start;
   const stopped = event && event.event !== "MOVE";
   const finished = index === trial.events.length;
@@ -92,10 +115,12 @@ function draw() {
   el("status").className = stopped || trial.status === "NO_ROUTE" ? "stop" : finished ? "done" : "";
   el("map-info").textContent = data.edited ? "Custom map (unsaved)" : data.seed === null || data.seed === undefined
     ? "Original demo" : `Seed ${data.seed} · ${worldIndex}/${worlds.length - 1} seeded maps`;
-  el("detail").textContent = `Tick ${event ? event.tick : 0} · Position (${position.join(", ")}) · ${index}/${trial.events.length} recorded events · Fault tick ${data.fault_tick}`;
+  el("detail").textContent = `Tick ${event ? event.tick : 0} · Position (${position.join(", ")}) · ${index}/${trial.events.length} recorded events · Fault tick ${data.fault_tick}` + (liveStop ? " · Live fault triggered — Reset to start a new replay" : "");
   el("seek").max = trial.events.length;
   el("seek").value = index;
-  el("play").disabled = el("step").disabled = finished;
+  el("play").disabled = el("step").disabled = finished || !!liveStop;
+  el("seek").disabled = !!liveStop;
+  liveButtons.forEach(id=>{el(id).disabled=timer===null || finished || !!liveStop;});
   const map = el("map");
   map.replaceChildren();
   map.setAttribute("viewBox", `0 0 ${data.grid[0].length * 40} ${data.grid.length * 40}`);
@@ -111,17 +136,23 @@ function draw() {
   svg("circle", {cx:x*40+20,cy:y*40+20,r:16,fill:stopped?"#b12639":"#75d6ff",stroke:stopped?"#fff":"#111b24","stroke-width":3});
   svg("text", {x:x*40+20,y:y*40+26,"text-anchor":"middle",fill:stopped?"#fff":"#111b24","font-weight":"bold"},stopped?"!":"R");
 }
-function advance() { if (index < trial.events.length) index++; draw(); }
+function advance() { if (!liveStop && index < trial.events.length) index++; draw(); }
 function loop() {
+  if(liveStop) { pause(); draw(); return; }
   advance();
   if (index < trial.events.length) timer = setTimeout(loop, Number(el("speed").value));
   else pause();
 }
-el("play").onclick = () => { if (timer !== null) pause(); else { el("play").textContent="Pause"; timer=setTimeout(loop,Number(el("speed").value)); } };
+el("play").onclick = () => {
+  if(liveStop) return;
+  if (timer !== null) pause();
+  else { el("play").textContent="Pause"; timer=setTimeout(loop,Number(el("speed").value)); }
+  draw();
+};
 el("step").onclick = () => { pause(); advance(); };
-el("reset").onclick = () => { pause(); index=0; draw(); };
-el("scenario").onchange = () => { pause(); trial=data.trials[Number(el("scenario").value)]; index=0; draw(); };
-el("seek").oninput = () => { pause(); index=Number(el("seek").value); draw(); };
+el("reset").onclick = () => { pause(); liveStop=null; index=0; draw(); };
+el("scenario").onchange = () => { pause(); liveStop=null; trial=data.trials[Number(el("scenario").value)]; index=0; draw(); };
+el("seek").oninput = () => { if(liveStop) return; pause(); index=Number(el("seek").value); draw(); };
 worlds.forEach((world, i) => {
   const option = document.createElement("option");
   option.value = i;
@@ -129,6 +160,7 @@ worlds.forEach((world, i) => {
   el("world").appendChild(option);
 });
 function changeWorld(i) {
+  liveStop=null;
   loadRevision++;
   pause();
   worldIndex = i;

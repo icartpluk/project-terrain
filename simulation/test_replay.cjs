@@ -130,6 +130,47 @@ assert.equal(element('editor').children[width+2].textContent,'·');
 assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(worlds)',context)),bank);
 console.log('Editor checks passed: Python parity, obstacles, destination, no route, cancellation and restore.');
 
+for(const [button,reason] of [['live-link','LINK LOSS'],['live-estop','E-STOP'],
+                            ['live-unauthorized','UNAUTHORIZED COMMAND']]) {
+  for(const moves of [0,1,bank[0].trials[0].events.length-1]) {
+    element('scenario').value='0'; element('scenario').onchange();
+    assert.equal(element(button).disabled,true);
+    element('play').onclick();
+    for(let i=0;i<moves;i++) scheduled();
+    const stale=scheduled;
+    const beforePosition=vm.runInContext('JSON.stringify(index ? trial.events[index-1].position : data.start)',context);
+    assert.equal(element(button).disabled,false);
+    element(button).onclick();
+    assert.equal(scheduled,null);
+    assert.equal(element('status').textContent,'SAFE STOP — '+reason);
+    assert.equal(element('play').disabled,true);
+    assert.equal(element('step').disabled,true);
+    assert.equal(element('seek').disabled,true);
+    assert.equal(vm.runInContext('JSON.stringify(liveStop.position)',context),beforePosition);
+    const detail=element('detail').textContent;
+    element('play').onclick(); element('step').onclick();
+    element('seek').value='0'; element('seek').oninput();
+    stale();
+    element('live-estop').onclick();
+    assert.equal(element('detail').textContent,detail);
+    assert.equal(element('status').textContent,'SAFE STOP — '+reason);
+    element('reset').onclick();
+    assert.equal(element('status').textContent,'READY');
+    assert.equal(element('play').disabled,false);
+    assert.equal(element('seek').disabled,false);
+  }
+}
+// Completed and paused runs cannot be relabeled as live stops.
+element('play').onclick(); while(scheduled) scheduled();
+element('live-link').onclick();
+assert.equal(element('status').textContent,'GOAL REACHED');
+element('reset').onclick(); element('play').onclick(); element('play').onclick();
+element('live-estop').onclick();
+assert.equal(element('status').textContent,'READY');
+assert.equal(element('live-estop').disabled,true);
+assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(worlds)',context)),bank);
+console.log('Live-stop checks passed: all causes, first/intermediate/final positions, latch, stale callbacks, reset and disabled states.');
+
 (async()=>{
   element('edit-tool').value='obstacle'; clickCell(2,1);
   element('save-map').onclick();
