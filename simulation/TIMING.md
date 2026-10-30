@@ -84,6 +84,29 @@ There are no new dependencies. Up to 1000 maps and 20 supplied delay pairs are
 accepted; each delay is 0–100 ticks. These controlled comparisons test the model's
 assumptions, not real-world performance or a distribution of real environments.
 
+### Compare fault locations along each route
+
+```sh
+python simulation/compare.py --placements first,middle,last --output results/route-positions
+```
+
+This tests the first, middle and final motion ticks on each route, with separate
+summary rows for each placement. With default maps and delays it produces 2700
+comparisons. Use `--placements fixed,first,middle,last` to include the original
+fixed fault tick as well. Default remains `fixed`, using `--fault-tick`.
+
+For a route of N moves, first uses tick 1, middle uses (N+1)//2 (the earlier middle
+tick for even N), and last uses tick N. On a one-move route all three placements
+use tick 1; they are named conditions, not independent samples. Disconnected maps
+remain excluded, not repaired or counted as successful fault responses.
+
+Trials export the requested placement, scheduled tick, injected tick and remaining
+route cells at fault time. Every delay and scenario uses the same tick for that
+map/placement. Means are never pooled across placements. Near G, extra travel may
+be only one cell even with a long response delay, because the route ends; latency
+still records the complete delay including waits at G. That cap does not imply a
+faster response or improved real-world safety.
+
 ## Reproduce without the browser
 
 From the repository root:
