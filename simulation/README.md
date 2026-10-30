@@ -42,6 +42,14 @@ Every edit pauses playback, clears the old trail, and recomputes all four scenar
 
 Editing works offline without a server. Exported maps use Python-recorded events; edited maps use an equivalent browser planner and stop model. Automated checks compare its complete results with Python for the embedded maps and custom reachable/unreachable fixtures, at first, intermediate and late fault ticks.
 
+## Save and load layouts
+
+Click **Save map** above the scenario controls to download `terrain-map.json`. Keep the file in a folder you can find. It contains the current layout and fault tick, including obstacle and destination edits. Your browser may ask where to save it.
+
+Use **Load map** to select that JSON file later. Playback pauses, all four scenarios are recomputed, and the loaded map starts at tick zero using the selected scenario. Files stay on your computer; no upload or server is involved. A loaded layout is a custom map; **Restore map** returns to the selected built-in map. Save again after making further edits.
+
+The version 1 format contains `version: 1`, `grid` (rows of `#.OSG`), and `fault_tick` (integer 1–1000000). Maps must be rectangular, 3–41 cells per side, enclosed by `#`, with exactly one S and G. Files larger than 32 KB are rejected. Saved files contain geometry and timing, not executable code or trusted trial results. Invalid files show a message and preserve the current map; unreachable valid maps load and report **NO ROUTE**.
+
 ## Run tests and reports
 
 ```sh

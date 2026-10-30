@@ -57,6 +57,7 @@ function editCell(x,y) {
     rows[y][x]=cell==="#"?".":"#";
   }
   pause();
+  loadRevision++;
   data=editedReplay(rows.map(row=>row.join("")),data.fault_tick);
   trial=data.trials[Number(el("scenario").value)]; index=0;
   el("edit-message").textContent="Map updated. Choose a scenario and press Play. Edits are not saved.";
@@ -78,3 +79,57 @@ function drawEditor() {
   }));
 }
 el("restore-map").onclick=()=>changeWorld(worldIndex);
+
+// Map files contain geometry and fault timing only. Recompute all events locally.
+function parseMapFile(text) {
+  if (text.length > 32768) throw new Error("Map file must be at most 32 KB.");
+  let file;
+  try { file=JSON.parse(text); } catch { throw new Error("Choose a valid JSON map file."); }
+  if (!file || file.version!==1 || !Array.isArray(file.grid))
+    throw new Error("Expected a TERRAIN version 1 map file.");
+  const grid=file.grid, width=typeof grid[0]==="string"?grid[0].length:0;
+  if (grid.length<3 || grid.length>41 || width<3 || width>41 ||
+      grid.some(row=>typeof row!=="string" || row.length!==width || /[^#.OSG]/.test(row)))
+    throw new Error("Map must be rectangular, 3–41 cells per side, using # . O S G.");
+  if (grid[0]!=="#".repeat(width) || grid.at(-1)!=="#".repeat(width) ||
+      grid.some(row=>row[0]!=="#" || row.at(-1)!=="#"))
+    throw new Error("The map boundary must contain only obstacles (#).");
+  const cells=grid.join("");
+  if ([...cells].filter(c=>c==="S").length!==1 || [...cells].filter(c=>c==="G").length!==1)
+    throw new Error("Map needs exactly one start S and one destination G.");
+  if (!Number.isSafeInteger(file.fault_tick) || file.fault_tick<1 || file.fault_tick>1000000)
+    throw new Error("Fault tick must be an integer from 1 to 1000000.");
+  return editedReplay(grid.slice(),file.fault_tick);
+}
+function mapFileText() {
+  return JSON.stringify({version:1,grid:data.grid,fault_tick:data.fault_tick},null,2)+"\n";
+}
+el("save-map").onclick=()=>{
+  const url=URL.createObjectURL(new Blob([mapFileText()],{type:"application/json"}));
+  const link=document.createElement("a");
+  link.href=url; link.download="terrain-map.json";
+  document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  el("edit-message").textContent="Map download requested. Keep terrain-map.json to load this layout later.";
+};
+el("load-map").onchange=async()=>{
+  const input=el("load-map"), file=input.files?.[0];
+  if(!file) return;
+  input.value="";
+  const revision=++loadRevision;
+  pause();
+  try {
+    if(file.size>32768) throw new Error("Map file must be at most 32 KB.");
+    const text=await file.text();
+    if(revision!==loadRevision) return;
+    const loaded=parseMapFile(text);
+    pause();
+    data=loaded; trial=data.trials[Number(el("scenario").value)]; index=0;
+    draw(); drawEditor();
+    el("edit-message").textContent="Map loaded. Press Play. Restore map returns to the selected built-in map.";
+  } catch(error) {
+    if(revision===loadRevision) el("edit-message").textContent="Could not load map: "+error.message;
+  } finally {
+    if(revision===loadRevision) input.value="";
+  }
+};
