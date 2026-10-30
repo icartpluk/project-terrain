@@ -1,6 +1,6 @@
-# Original Project TERRAIN proposal — preserved wording
+# Project TERRAIN — earlier proposal reconstruction (verification pending)
 
-The following text preserves the original spoken proposal from October 23, 2026, including the closing assistant comment as recorded. It is an archival transcript, not a finalized letter; do not edit this section when preparing revisions.
+This text was entered during repository setup as a reconstruction of the October 23, 2026 discussion. **It has not been verified against the original spoken transcript and must not be described as verbatim.** The original wording should be recovered and checked before treating this file as an archival record. The text below is retained unchanged pending that verification.
 
 > Subject: Project TERRAIN proposal for Tesla Optimus.
 >
@@ -24,4 +24,4 @@ The following text preserves the original spoken proposal from October 23, 2026,
 >
 > I’ll also keep checking for a verified mailing address or official submission channel so you’re not sending it into the void.
 
-**Archival note:** The final sentence beginning “I’ll also keep checking” was spoken by the assistant and is retained verbatim to preserve the record; it should not appear in a final external cover letter.
+**Editorial note:** The final sentence beginning “I’ll also keep checking” appears to be an assistant comment, not part of the letter. Its precise original wording is unverified. Exclude it from external drafts.
