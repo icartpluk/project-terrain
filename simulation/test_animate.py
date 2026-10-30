@@ -5,11 +5,27 @@ import sys
 import tempfile
 import unittest
 
-from animate import render_html, replay_data
+from animate import map_collection, render_html, replay_data
+from batch import generate_environment
 from sim import locate, plan, simulate
 
 
 class AnimationTests(unittest.TestCase):
+    def test_seeded_maps_match_existing_generator_and_safety_events(self):
+        bank = map_collection(seed=42, maps=4)
+        self.assertEqual(bank, map_collection(seed=42, maps=4))
+        self.assertEqual(len(bank["maps"]), 5)
+        for offset, world in enumerate(bank["maps"][1:]):
+            grid = generate_environment(42 + offset)
+            self.assertEqual(world["seed"], 42 + offset)
+            self.assertEqual(world["grid"], list(grid))
+            for trial in world["trials"]:
+                self.assertEqual(trial, simulate(trial["scenario"], 8, grid))
+        self.assertNotEqual(bank["maps"][1]["grid"], bank["maps"][2]["grid"])
+        for count in (0, 101):
+            with self.assertRaises(ValueError):
+                map_collection(maps=count)
+
     def test_reproducible_replay_matches_simulation(self):
         data = replay_data()
         self.assertEqual(data, replay_data())
@@ -45,10 +61,17 @@ class AnimationTests(unittest.TestCase):
                            check=True, capture_output=True)
             html = target.read_text(encoding="utf-8")
             payload = html.split('<script id="replay-data" type="application/json">')[1].split('</script>')[0]
-            self.assertEqual(json.loads(payload), replay_data())
+            self.assertEqual(json.loads(payload), map_collection())
             self.assertNotIn("__REPLAY_DATA__", html)
             self.assertNotIn('<script src=', html)
             invalid = subprocess.run([sys.executable, script, "--fault-tick", "0"], capture_output=True)
+            self.assertNotEqual(invalid.returncode, 0)
+            subprocess.run([sys.executable, script, "--seed", "42", "--maps", "2",
+                            "--output", str(target)], check=True, capture_output=True)
+            html = target.read_text(encoding="utf-8")
+            payload = html.split('<script id="replay-data" type="application/json">')[1].split('</script>')[0]
+            self.assertEqual(json.loads(payload), map_collection(seed=42, maps=2))
+            invalid = subprocess.run([sys.executable, script, "--maps", "0"], capture_output=True)
             self.assertNotEqual(invalid.returncode, 0)
 
     def test_embedded_data_cannot_close_script(self):

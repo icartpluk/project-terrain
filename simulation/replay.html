@@ -25,6 +25,11 @@
   <h1>TERRAIN / Underground grid</h1>
   <p>Inert software demonstration. Watch the Python simulation navigate a fictional tunnel and stop when a fault is injected.</p>
   <div class="controls">
+    <label>Map <select id="world"></select></label>
+    <button id="new-map">New map</button>
+    <span id="map-info"></span>
+  </div>
+  <div class="controls">
     <label>Scenario <select id="scenario">
       <option value="0">Normal navigation</option>
       <option value="1">Link loss</option>
@@ -37,14 +42,16 @@
   <div id="status" role="status" aria-live="polite"></div>
   <p id="detail"></p>
   <svg id="map" role="img" aria-labelledby="map-title map-desc"></svg>
-  <div class="legend"><span>● R = robot</span><span>G = destination</span><span>S = start</span><span>▧ = rock / obstacle</span><span>· = traveled path</span></div>
+  <div class="legend"><span>● R = robot</span><span>G = destination</span><span>S = start</span><span>▧ = rock / obstacle</span><span>O = inert foam marker (traversable)</span><span>· = traveled path</span></div>
   <div class="controls"><label>Replay tick <input id="seek" type="range" min="0" value="0"></label></div>
   <p>Playback reads recorded events; it does not control hardware. Stops remain latched at the recorded position. Reset or changing scenario starts a fresh replay; seeking only inspects history. Faults scheduled after arrival are not injected.</p>
 </main>
 <script id="replay-data" type="application/json">__REPLAY_DATA__</script>
 <script>
 "use strict";
-const data = JSON.parse(document.getElementById("replay-data").textContent);
+const payload = JSON.parse(document.getElementById("replay-data").textContent);
+const worlds = payload.maps || [payload];
+let worldIndex = 0, data = worlds[0];
 const el = id => document.getElementById(id);
 const reasons = {COMMUNICATION_LOSS: "LINK LOSS", EMERGENCY_STOP: "E-STOP", UNAUTHORIZED_COMMAND: "UNAUTHORIZED COMMAND"};
 let trial = data.trials[0], index = 0, timer = null;
@@ -65,7 +72,9 @@ function draw() {
   const status = stopped ? "SAFE STOP — " + reasons[event.event] :
     finished ? trial.status.replaceAll("_", " ") : index ? "MOVING" : "READY";
   el("status").textContent = status;
-  el("status").className = stopped ? "stop" : finished ? "done" : "";
+  el("status").className = stopped || trial.status === "NO_ROUTE" ? "stop" : finished ? "done" : "";
+  el("map-info").textContent = data.seed === null || data.seed === undefined
+    ? "Original demo" : `Seed ${data.seed} · ${worldIndex}/${worlds.length - 1} seeded maps`;
   el("detail").textContent = `Tick ${event ? event.tick : 0} · Position (${position.join(", ")}) · ${index}/${trial.events.length} recorded events · Fault tick ${data.fault_tick}`;
   el("seek").max = trial.events.length;
   el("seek").value = index;
@@ -78,7 +87,7 @@ function draw() {
   data.grid.forEach((row, y) => [...row].forEach((cell, x) => {
     svg("rect", {x:x*40, y:y*40, width:40, height:40, fill:cell==="#"?"#536371":"#202f3b", stroke:"#111b24"});
     if (cell === "#") svg("path", {d:`M${x*40+5} ${y*40+30}l25 -25`, stroke:"#82919b"});
-    if (cell === "S" || cell === "G") svg("text", {x:x*40+20,y:y*40+26,"text-anchor":"middle",fill:cell==="G"?"#84ffb4":"#c5d2dc","font-weight":"bold"},cell);
+    if (cell === "S" || cell === "G" || cell === "O") svg("text", {x:x*40+20,y:y*40+26,"text-anchor":"middle",fill:cell==="G"?"#84ffb4":"#c5d2dc","font-weight":"bold"},cell);
   }));
   for (const e of trial.events.slice(0,index).filter(e=>e.event==="MOVE")) svg("circle", {cx:e.position[0]*40+20,cy:e.position[1]*40+20,r:3,fill:"#75d6ff"});
   const [x,y] = position;
@@ -96,6 +105,24 @@ el("step").onclick = () => { pause(); advance(); };
 el("reset").onclick = () => { pause(); index=0; draw(); };
 el("scenario").onchange = () => { pause(); trial=data.trials[Number(el("scenario").value)]; index=0; draw(); };
 el("seek").oninput = () => { pause(); index=Number(el("seek").value); draw(); };
+worlds.forEach((world, i) => {
+  const option = document.createElement("option");
+  option.value = i;
+  option.textContent = world.label || "Original demo";
+  el("world").appendChild(option);
+});
+function changeWorld(i) {
+  pause();
+  worldIndex = i;
+  data = worlds[i];
+  el("world").value = i;
+  trial = data.trials[Number(el("scenario").value)];
+  index = 0;
+  draw();
+}
+el("world").onchange = () => changeWorld(Number(el("world").value));
+el("new-map").disabled = worlds.length < 2;
+el("new-map").onclick = () => changeWorld(worldIndex + 1 < worlds.length ? worldIndex + 1 : 1);
 draw();
 </script>
 </html>
