@@ -34,6 +34,14 @@ python simulation/animate.py --seed 42 --maps 30
 
 Tick 1 stops before the first move. A fault scheduled after arrival is not injected; the display reports GOAL REACHED instead of claiming a safety stop. Randomized batch reports remain available through `batch.py`.
 
+## Edit a map
+
+Open **Edit this map** below the status banner. Choose **Toggle obstacle** and click a cell in the editing grid to add or remove an obstacle. Choose **Set destination** and click a cell to move G there (including clearing an obstacle). Start S and boundary cells stay fixed; obstacles cannot replace G. Cells are keyboard-accessible buttons.
+
+Every edit pauses playback, clears the old trail, and recomputes all four scenarios. Press **Play** to watch the new route. A blocked destination reports **NO ROUTE**. **Reset** restarts the edited replay; **Restore map** discards edits and reloads the selected original map. Changing maps or closing/reloading the file also discards edits. The label **Custom map (unsaved)** distinguishes edited maps from the displayed original seeds.
+
+Editing works offline without a server. Exported maps use Python-recorded events; edited maps use an equivalent browser planner and stop model. Automated checks compare its complete results with Python for the embedded maps and custom reachable/unreachable fixtures, at first, intermediate and late fault ticks.
+
 ## Run tests and reports
 
 ```sh
