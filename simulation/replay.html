@@ -32,6 +32,8 @@
     <label>Map <select id="world"></select></label>
     <button id="new-map">New map</button>
     <span id="map-info"></span>
+    <button id="save-map">Save map</button>
+    <label>Load map <input id="load-map" type="file" accept=".json,application/json"></label>
   </div>
   <div class="controls">
     <label>Scenario <select id="scenario">
@@ -66,6 +68,7 @@
 const payload = JSON.parse(document.getElementById("replay-data").textContent);
 const worlds = payload.maps || [payload];
 let worldIndex = 0, data = worlds[0];
+let loadRevision = 0;
 const el = id => document.getElementById(id);
 const reasons = {COMMUNICATION_LOSS: "LINK LOSS", EMERGENCY_STOP: "E-STOP", UNAUTHORIZED_COMMAND: "UNAUTHORIZED COMMAND"};
 let trial = data.trials[0], index = 0, timer = null;
@@ -126,6 +129,7 @@ worlds.forEach((world, i) => {
   el("world").appendChild(option);
 });
 function changeWorld(i) {
+  loadRevision++;
   pause();
   worldIndex = i;
   data = worlds[i];

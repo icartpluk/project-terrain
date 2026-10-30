@@ -6,15 +6,18 @@ const data = html.match(/<script id="replay-data" type="application\/json">([\s\
 const code = html.match(/<script>\s*([\s\S]*?)<\/script>/)[1];
 const elements = {};
 function element(id) {
-  return elements[id] ||= {textContent:'', value:'', children:[], style:{}, focus(){},
+  return elements[id] ||= {textContent:'', value:'', children:[], style:{}, focus(){}, click(){}, remove(){},
     setAttribute(k,v) { this[k]=v; }, appendChild(n) {this.children.push(n);},
     replaceChildren() {this.children=[];}};
 }
 element('replay-data').textContent = data;
 element('speed').value = '600';
 let scheduled = null;
+let savedBlob, revoked=false;
 const context = vm.createContext({
-  document:{getElementById:element, createElement:()=>element('option'+Math.random()),
+  Blob,
+  URL:{createObjectURL(blob){savedBlob=blob;return 'blob:test';},revokeObjectURL(){revoked=true;}},
+  document:{body:element('body'),getElementById:element, createElement:()=>element('option'+Math.random()),
     createElementNS:()=>element('node'+Math.random())},
   setTimeout:fn=>{scheduled=fn;return 1;}, clearTimeout:()=>{scheduled=null;}
 });
@@ -126,3 +129,59 @@ assert.equal(element('status').textContent,'READY');
 assert.equal(element('editor').children[width+2].textContent,'·');
 assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(worlds)',context)),bank);
 console.log('Editor checks passed: Python parity, obstacles, destination, no route, cancellation and restore.');
+
+(async()=>{
+  element('edit-tool').value='obstacle'; clickCell(2,1);
+  element('save-map').onclick();
+  const text=await savedBlob.text(), saved=JSON.parse(text);
+  assert.equal(saved.version,1);
+  assert.equal(saved.grid[1][2],'#');
+  assert.equal(saved.fault_tick,8);
+  assert.deepEqual(Object.keys(saved).sort(),['fault_tick','grid','version']);
+  scheduled(); scheduled=null;
+  assert.equal(revoked,true);
+  element('restore-map').onclick();
+  const load=async(text,size=Buffer.byteLength(text))=>{
+    element('load-map').files=[{size,text:async()=>text}];
+    await element('load-map').onchange();
+  };
+  await load(text);
+  assert.equal(element('editor').children[width+2].textContent,'#');
+  assert.equal(element('seek').value,0);
+  assert.equal(vm.runInContext('mapFileText()',context),text);
+  // Bad inputs must not replace the current geometry, events or playback tick.
+  const before=vm.runInContext('JSON.stringify(data)',context);
+  const invalid=[
+    'bad JSON', 'null', JSON.stringify({...saved,version:2}),
+    JSON.stringify({...saved,grid:['###','#S#','###']}),
+    JSON.stringify({...saved,grid:['#####','#SSG#','#####']}),
+    JSON.stringify({...saved,grid:['#####','#S.G#','####']}),
+    JSON.stringify({...saved,grid:['#####','#S<G#','#####']}),
+    JSON.stringify({...saved,grid:['.####','#S.G#','#####']}),
+    ...[0,1.5,1000001,'8'].map(fault_tick=>JSON.stringify({...saved,fault_tick})),
+    JSON.stringify({...saved,grid:Array(42).fill('#'.repeat(42))})
+  ];
+  for(const bad of invalid) {
+    await load(bad);
+    assert.match(element('edit-message').textContent,/Could not load map/);
+    assert.equal(vm.runInContext('JSON.stringify(data)',context),before);
+    assert.equal(element('load-map').value,'');
+  }
+  await load(text,32769);
+  assert.match(element('edit-message').textContent,/32 KB/);
+  const blocked=JSON.stringify({version:1,grid:['#####','#S#G#','#####'],fault_tick:1});
+  element('play').onclick();
+  await load(blocked);
+  assert.equal(scheduled,null);
+  assert.equal(element('status').textContent,'NO ROUTE');
+  assert.equal(element('play').disabled,true);
+  // A slow file read must not overwrite a newer map selection.
+  let resolveRead;
+  element('load-map').files=[{size:10,text:()=>new Promise(resolve=>{resolveRead=resolve;})}];
+  const pending=element('load-map').onchange();
+  element('restore-map').onclick();
+  resolveRead(blocked); await pending;
+  assert.equal(element('status').textContent,'READY');
+  assert.equal(element('map-info').textContent,'Original demo');
+  console.log('Save/load checks passed: round trip, download cleanup, invalid files, no route, and stale reads.');
+})().catch(error=>{console.error(error);process.exitCode=1;});
