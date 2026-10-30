@@ -70,6 +70,8 @@ The version 1 format contains `version: 1`, `grid` (rows of `#.OSG`), and `fault
 
 ## Run tests and reports
 
+For a repeatable comparison across 100 random maps, run `python simulation/compare.py`, then open `results/delay-comparison/report.html`. It compares instant stops with two delayed settings on identical maps and fault ticks. CSV and JSON exports include separate counts for faults that could not be injected. See [TIMING.md](TIMING.md#compare-settings-across-random-maps) for options and how to interpret the report.
+
 ```sh
 python -m unittest discover -s simulation -v
 python simulation/sim.py --output results/baseline
