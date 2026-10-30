@@ -1,6 +1,6 @@
 // Match sim.py's Dijkstra ordering: distance, x, then y.
 // Offline edits use this browser model; exported maps retain Python events.
-function editedReplay(grid, faultTick) {
+function editedReplay(grid, faultTick, communicationDelay=0, stoppingDelay=0) {
   const locate = symbol => {
     for (let y=0;y<grid.length;y++) for (let x=0;x<grid[y].length;x++)
       if (grid[y][x] === symbol) return [x,y];
@@ -41,8 +41,51 @@ function editedReplay(grid, faultTick) {
     return {scenario,status,reached_goal:key(position)===key(goal),moves,
       planned_steps:Math.max(0,path.length-1),final_position:position,safe_stop:status==="SAFE_STOP",events};
   });
-  return {grid,start,fault_tick:faultTick,trials,edited:true,seed:null};
+  const world={grid,start,fault_tick:faultTick,trials,edited:true,seed:null};
+  return communicationDelay || stoppingDelay ? timedWorld(world,communicationDelay,stoppingDelay) : world;
 }
+function timedWorld(world, communicationDelay, stoppingDelay) {
+  const path=[world.start,...world.trials[0].events.map(e=>e.position)];
+  const faultTick=world.fault_tick;
+  const trials=world.trials.map(baseline=>{
+    const timing={communication_delay_ticks:communicationDelay,stopping_delay_ticks:stoppingDelay,
+      fault_tick:null,stop_tick:null,latency_ticks:null,moves_after_fault:0};
+    if(baseline.scenario==="normal" || !baseline.safe_stop) return {...baseline,timing};
+    const detection=baseline.scenario==="estop"?0:communicationDelay;
+    const latency=detection+stoppingDelay;
+    const reason={link_loss:"COMMUNICATION_LOSS",estop:"EMERGENCY_STOP",unauthorized:"UNAUTHORIZED_COMMAND"}[baseline.scenario];
+    const events=world.trials[0].events.slice(0,faultTick-1).map(e=>({...e}));
+    let position=path[faultTick-1], moves=faultTick-1, extraMoves=0;
+    for(let elapsed=0;elapsed<latency;elapsed++) {
+      const moving=moves<path.length-1;
+      if(moving) { moves++; extraMoves++; position=path[moves]; }
+      events.push({tick:faultTick+elapsed,event:moving?"MOVE":"WAIT",position,
+        phase:elapsed<detection?"COMMUNICATION_DELAY":"STOPPING_DELAY",fault_reason:reason});
+    }
+    events.push({tick:faultTick+latency,event:reason,position});
+    Object.assign(timing,{fault_tick:faultTick,stop_tick:faultTick+latency,latency_ticks:latency,moves_after_fault:extraMoves});
+    return {...baseline,status:"SAFE_STOP",safe_stop:true,reached_goal:position.join()===path.at(-1).join(),
+      moves,final_position:position,events,timing};
+  });
+  return {...world,trials,communication_delay:communicationDelay,stopping_delay:stoppingDelay};
+}
+function syncDelayInputs() {
+  el("communication-delay").value=data.communication_delay || 0;
+  el("stopping-delay").value=data.stopping_delay || 0;
+}
+el("apply-delays").onclick=()=>{
+  const communication=Number(el("communication-delay").value), stopping=Number(el("stopping-delay").value);
+  if(![communication,stopping].every(n=>Number.isInteger(n) && n>=0 && n<=100)) {
+    el("edit-message").textContent="Delays must be whole ticks from 0 to 100."; return;
+  }
+  pause(); loadRevision++; liveStop=null; liveActive=false;
+  const wasEdited=data.edited, seed=data.seed;
+  data=editedReplay(data.grid,data.fault_tick,communication,stopping);
+  data.edited=wasEdited; data.seed=seed;
+  trial=data.trials[Number(el("scenario").value)]; index=0;
+  draw();
+  el("edit-message").textContent="Delay settings applied. A new replay is ready.";
+};
 function editCell(x,y) {
   const cell=data.grid[y][x], rows=data.grid.map(row=>[...row]);
   if(x===0 || y===0 || y===rows.length-1 || x===rows[y].length-1 || cell==="S") return;
@@ -58,8 +101,8 @@ function editCell(x,y) {
   }
   pause();
   loadRevision++;
-  data=editedReplay(rows.map(row=>row.join("")),data.fault_tick);
-  liveStop=null;
+  data=editedReplay(rows.map(row=>row.join("")),data.fault_tick,data.communication_delay||0,data.stopping_delay||0);
+  liveStop=null; liveActive=false;
   trial=data.trials[Number(el("scenario").value)]; index=0;
   el("edit-message").textContent="Map updated. Choose a scenario and press Play. Edits are not saved.";
   draw(); drawEditor();
@@ -112,10 +155,17 @@ function parseMapFile(text) {
     throw new Error("Map needs exactly one start S and one destination G.");
   if (!Number.isSafeInteger(file.fault_tick) || file.fault_tick<1 || file.fault_tick>1000000)
     throw new Error("Fault tick must be an integer from 1 to 1000000.");
-  return editedReplay(grid.slice(),file.fault_tick);
+  const communication=file.communication_delay===undefined?0:file.communication_delay;
+  const stopping=file.stopping_delay===undefined?0:file.stopping_delay;
+  if(![communication,stopping].every(n=>Number.isInteger(n) && n>=0 && n<=100))
+    throw new Error("Delays must be whole ticks from 0 to 100.");
+  return editedReplay(grid.slice(),file.fault_tick,communication,stopping);
 }
 function mapFileText() {
-  return JSON.stringify({version:1,grid:data.grid,fault_tick:data.fault_tick},null,2)+"\n";
+  const file={version:1,grid:data.grid,fault_tick:data.fault_tick};
+  if(data.communication_delay || data.stopping_delay)
+    Object.assign(file,{communication_delay:data.communication_delay||0,stopping_delay:data.stopping_delay||0});
+  return JSON.stringify(file,null,2)+"\n";
 }
 el("save-map").onclick=()=>{
   const url=URL.createObjectURL(new Blob([mapFileText()],{type:"application/json"}));
@@ -138,7 +188,7 @@ el("load-map").onchange=async()=>{
     const loaded=parseMapFile(text);
     pause();
     data=loaded; trial=data.trials[Number(el("scenario").value)]; index=0;
-    liveStop=null;
+    liveStop=null; liveActive=false; syncDelayInputs();
     draw(); drawEditor();
     el("edit-message").textContent="Map loaded. Press Play. Restore map returns to the selected built-in map.";
   } catch(error) {

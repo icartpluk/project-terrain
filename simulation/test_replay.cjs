@@ -182,6 +182,71 @@ assert.equal(prevented,true);
 assert.equal(focusedElement,neighbor);
 element('reset').onclick();
 
+const timedFixtures=[...fixtures.slice(0,3),...fixtures.slice(-3)];
+const timedReference=spawnSync(process.env.PYTHON || 'python',['-c',
+  'import sys,json; sys.path.insert(0,"simulation"); from timing import simulate_timed; grids=json.load(sys.stdin); print(json.dumps([[simulate_timed(s,t,g,c,b) for s in ("normal","link_loss","estop","unauthorized")] for g in grids for t in (1,3,1000) for c,b in ((0,0),(2,1),(0,2),(3,0))]))'],
+  {input:JSON.stringify(timedFixtures),encoding:'utf8',maxBuffer:4*1024*1024});
+assert.equal(timedReference.status,0,timedReference.stderr);
+let timedIndex=0;
+const timedExpected=JSON.parse(timedReference.stdout);
+for(const grid of timedFixtures) for(const tick of [1,3,1000])
+  for(const [communication,stopping] of [[0,0],[2,1],[0,2],[3,0]]) {
+    const actual=vm.runInContext('timedWorld(editedReplay('+JSON.stringify(grid)+','+tick+'),'+communication+','+stopping+').trials',context);
+    assert.deepEqual(JSON.parse(JSON.stringify(actual)),timedExpected[timedIndex++]);
+  }
+const applyDelays=(c,s)=>{
+  element('communication-delay').value=String(c); element('stopping-delay').value=String(s);
+  element('apply-delays').onclick();
+};
+for(const [choice,reason,latency] of [[1,'LINK LOSS',3],[2,'E-STOP',1],[3,'UNAUTHORIZED COMMAND',3]]) {
+  applyDelays(2,1);
+  element('scenario').value=String(choice); element('scenario').onchange();
+  element('play').onclick();
+  for(let i=0;i<8;i++) scheduled();
+  assert.match(element('status').textContent, /DELAY/);
+  assert.equal(element('status').className,'pending');
+  while(scheduled) scheduled();
+  assert.equal(element('status').textContent,'SAFE STOP — '+reason);
+  assert.match(element('delay-comparison').textContent,new RegExp(latency+' ticks, '+latency+' extra cells'));
+}
+for(const [button,reason,latency] of [['live-link','LINK LOSS',3],['live-estop','E-STOP',1],
+                                     ['live-unauthorized','UNAUTHORIZED COMMAND',3]]) {
+  element('scenario').value='0'; element('scenario').onchange();
+  element('play').onclick(); scheduled();
+  element(button).onclick();
+  assert.equal(element('seek').disabled,true);
+  scheduled();
+  assert.match(element('status').textContent,/DELAY/);
+  const pendingPosition=vm.runInContext('JSON.stringify(trial.events[index-1].position)',context);
+  element('play').onclick(); // Pause and resume the response.
+  element('step').onclick();
+  assert.notEqual(element('status').textContent,'GOAL REACHED');
+  if(!element('play').disabled) { element('play').onclick(); while(scheduled) scheduled(); }
+  assert.equal(element('status').textContent,'SAFE STOP — '+reason);
+  assert.match(element('delay-comparison').textContent,new RegExp(latency+' ticks, '+latency+' extra cells'));
+  const stopped=element('detail').textContent;
+  element('step').onclick(); assert.equal(element('detail').textContent,stopped);
+  element('reset').onclick();
+  assert.equal(element('status').textContent,'READY');
+}
+const delayedSave=vm.runInContext('mapFileText()',context);
+assert.equal(JSON.parse(delayedSave).communication_delay,2);
+assert.equal(JSON.parse(delayedSave).stopping_delay,1);
+assert.equal(vm.runInContext('parseMapFile('+JSON.stringify(delayedSave)+').communication_delay',context),2);
+element('new-map').onclick();
+assert.equal(vm.runInContext('data.communication_delay',context),2);
+element('world').value='0'; element('world').onchange();
+assert.equal(vm.runInContext('data.stopping_delay',context),1);
+for(const value of [-1,101,1.5,null,"2",true]) {
+  const bad=JSON.stringify({...JSON.parse(delayedSave),communication_delay:value});
+  assert.throws(()=>vm.runInContext('parseMapFile('+JSON.stringify(bad)+')',context),/whole ticks/);
+}
+applyDelays(-1,0);
+assert.match(element('edit-message').textContent,/whole ticks/);
+applyDelays(0,0);
+element('scenario').value='0'; element('scenario').onchange();
+console.log('Timing checks passed: Python parity, scheduled/live phases, distances, E-stop bypass, delay persistence and zero defaults.');
+
 (async()=>{
   element('edit-tool').value='obstacle'; clickCell(2,1);
   element('save-map').onclick();

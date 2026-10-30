@@ -20,7 +20,7 @@ The main view keeps Play, Reset, New map, the stop buttons and the robot togethe
 
 Choose **Normal navigation**, **Link loss**, **E-stop**, or **Unauthorized command**, then click **Play**. Use **Pause**, **Step**, **Reset**, the tick slider, and the tick duration selector to inspect the replay. The map shows obstacles, start S, destination G, the traveled path, and robot R. A stopped robot becomes a red `!`, with a persistent **SAFE STOP** banner naming the cause. Text labels distinguish states without relying on color.
 
-The replay uses `sim.py`'s actual recorded events, including its stop-before-move behavior. It never advances beyond the last recorded event. Reset and scenario selection start a new replay; they do not clear a live robot fault.
+With default zero delays, the replay uses `sim.py`'s actual recorded events, including its stop-before-move behavior. It never advances beyond the last recorded event. Reset and scenario selection start a new replay; they do not clear a live robot fault.
 
 The original demo and default fault tick 8 remain reproducible:
 
@@ -40,13 +40,17 @@ python simulation/animate.py --seed 42 --maps 30
 
 Tick 1 stops before the first move. A fault scheduled after arrival is not injected; the display reports GOAL REACHED instead of claiming a safety stop. Randomized batch reports remain available through `batch.py`.
 
+## Experiment with response delays
+
+Expand **Communication and stopping delays**, enter whole ticks from 0 to 100, and click **Apply delays**. Both default to 0. A delayed response shows amber communication/stopping phases and compares predicted latency and extra grid cells with an instant stop. E-stop bypasses communication delay. Applying settings starts a new replay; saved maps preserve nonzero settings. See [TIMING.md](TIMING.md) for the exact model, examples and reproducible commands. This models response timing, not physical braking.
+
 ## Trigger a stop during playback
 
-Choose **Normal navigation** and press **Play**. While playback runs, click **Trigger link loss**, **Trigger E-stop**, or **Trigger unauthorized command**. The robot freezes at its current cell, the pending movement timer is canceled, and the red **SAFE STOP** banner names the cause.
+Choose **Normal navigation** and press **Play**. While playback runs, click **Trigger link loss**, **Trigger E-stop**, or **Trigger unauthorized command**. With zero delays, the robot freezes at its current cell, the pending movement timer is canceled, and the red **SAFE STOP** banner names the cause. Nonzero delays show continued movement in amber before the red stop.
 
 Play, Step, and the tick slider remain disabled after a live stop. **Reset** starts a new replay from S. Changing scenario or map, editing a cell, or loading a map also starts a fresh replay and clears the live stop. These are simulated replay actions, not hardware safety resets. The buttons are disabled while paused, before Play, after arrival, when no route exists, or after any safety stop.
 
-The scenario selector still demonstrates scheduled faults at the configured fault tick. Live buttons inject a fault at the currently displayed position instead. Saved map files continue to contain only geometry and scheduled fault timing; live-stop history is not saved.
+The scenario selector still demonstrates scheduled faults at the configured fault tick. Live buttons inject a fault at the currently displayed position instead. Saved map files contain geometry, scheduled fault timing and any nonzero delay settings; live-stop history is not saved.
 
 ## Edit a map
 
@@ -62,7 +66,7 @@ Expand **Choose, save or load a map** and click **Save map** to download `terrai
 
 Use **Load map** to select that JSON file later. Playback pauses, all four scenarios are recomputed, and the loaded map starts at tick zero using the selected scenario. Files stay on your computer; no upload or server is involved. A loaded layout is a custom map; **Restore map** returns to the selected built-in map. Save again after making further edits.
 
-The version 1 format contains `version: 1`, `grid` (rows of `#.OSG`), and `fault_tick` (integer 1–1000000). Maps must be rectangular, 3–41 cells per side, enclosed by `#`, with exactly one S and G. Files larger than 32 KB are rejected. Saved files contain geometry and timing, not executable code or trusted trial results. Invalid files show a message and preserve the current map; unreachable valid maps load and report **NO ROUTE**.
+The version 1 format contains `version: 1`, `grid` (rows of `#.OSG`), and `fault_tick` (integer 1–1000000). Maps must be rectangular, 3–41 cells per side, enclosed by `#`, with exactly one S and G. Files larger than 32 KB are rejected. Optional `communication_delay` and `stopping_delay` fields accept whole ticks from 0 to 100; missing fields default to zero. Saved files contain geometry and timing, not executable code or trusted trial results. Invalid files show a message and preserve the current map; unreachable valid maps load and report **NO ROUTE**.
 
 ## Run tests and reports
 
