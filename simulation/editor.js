@@ -59,6 +59,7 @@ function editCell(x,y) {
   pause();
   loadRevision++;
   data=editedReplay(rows.map(row=>row.join("")),data.fault_tick);
+  liveStop=null;
   trial=data.trials[Number(el("scenario").value)]; index=0;
   el("edit-message").textContent="Map updated. Choose a scenario and press Play. Edits are not saved.";
   draw(); drawEditor();
@@ -125,6 +126,7 @@ el("load-map").onchange=async()=>{
     const loaded=parseMapFile(text);
     pause();
     data=loaded; trial=data.trials[Number(el("scenario").value)]; index=0;
+    liveStop=null;
     draw(); drawEditor();
     el("edit-message").textContent="Map loaded. Press Play. Restore map returns to the selected built-in map.";
   } catch(error) {
