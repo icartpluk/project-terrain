@@ -1,0 +1,5 @@
+scenario,status,reached_goal,moves,planned_steps,safe_stop
+normal,GOAL_REACHED,True,17,17,False
+link_loss,SAFE_STOP,False,7,17,True
+estop,SAFE_STOP,False,7,17,True
+unauthorized,SAFE_STOP,False,7,17,True
