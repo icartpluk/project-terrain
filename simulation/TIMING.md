@@ -52,6 +52,38 @@ The screen compares predicted total latency and extra cells with an instant stop
 replay is still running. Red SAFE STOP means the model has reached its stationary
 end state, not that delayed travel was safe in a real environment.
 
+## Compare settings across random maps
+
+```sh
+python simulation/compare.py
+```
+
+Open `results/delay-comparison/report.html` in a browser. The default experiment
+uses 100 consecutive seeds starting at 20261030, all three fault scenarios, fault
+tick 8, and delay pairs 0:0, 2:1 and 4:2 (communication:stopping): 900 comparisons.
+Every setting uses identical maps and fault ticks. The zero-delay baseline is
+always included and duplicate settings are removed.
+
+The report provides latency and extra-cell means/maxima, with separate counts for
+injected faults, no route, and faults scheduled after arrival. Means exclude
+uninjected cases. A dash means no eligible faults, not a zero-delay response.
+Reaching G during a delay is counted separately, not reported as a safety pass.
+Extra cells measure distance along the route after the fault, not straight-line
+displacement. E-stop rows with different communication settings may be identical
+because E-stop bypasses that delay.
+
+The same folder contains summary.csv, individual trials.csv, and comparison.json
+with the configuration, all map geometry and trial results. Keep the files
+together when moving the report. To run a different experiment:
+
+```sh
+python simulation/compare.py --maps 50 --seed 42 --fault-tick 12 --delays 0:0,1:1,3:2 --output results/experiment-42
+```
+
+There are no new dependencies. Up to 1000 maps and 20 supplied delay pairs are
+accepted; each delay is 0–100 ticks. These controlled comparisons test the model's
+assumptions, not real-world performance or a distribution of real environments.
+
 ## Reproduce without the browser
 
 From the repository root:
