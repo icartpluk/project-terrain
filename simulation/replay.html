@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TERRAIN — Underground grid replay</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #111b24; color: #ecf3f8; font: 16px system-ui, sans-serif; }
+  main { max-width: 880px; margin: auto; padding: 24px; }
+  h1 { font-size: 1.7rem; margin-bottom: 8px; }
+  p { color: #c5d2dc; line-height: 1.5; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 18px 0; }
+  button, select { padding: 10px; font: inherit; border-radius: 6px; border: 1px solid #9baebd; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; opacity: .55; }
+  #status { padding: 16px; border: 3px solid #75d6ff; border-radius: 8px; font-weight: 700; }
+  #status.stop { color: #fff; background: #8d2230; border-color: #ffb4b4; }
+  #status.done { color: #d5ffe4; background: #175137; border-color: #78e4a4; }
+  #map { display: block; width: 100%; max-height: 60vh; margin: 18px auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; }
+  .legend span { white-space: nowrap; }
+  input { max-width: 100%; }
+</style>
+<main>
+  <h1>TERRAIN / Underground grid</h1>
+  <p>Inert software demonstration. Watch the Python simulation navigate a fictional tunnel and stop when a fault is injected.</p>
+  <div class="controls">
+    <label>Scenario <select id="scenario">
+      <option value="0">Normal navigation</option>
+      <option value="1">Link loss</option>
+      <option value="2">E-stop</option>
+      <option value="3">Unauthorized command</option>
+    </select></label>
+    <button id="play">Play</button><button id="step">Step</button><button id="reset">Reset</button>
+    <label>Tick duration <select id="speed"><option value="600">0.6 seconds</option><option value="200">0.2 seconds</option><option value="1200">1.2 seconds</option></select></label>
+  </div>
+  <div id="status" role="status" aria-live="polite"></div>
+  <p id="detail"></p>
+  <svg id="map" role="img" aria-labelledby="map-title map-desc"></svg>
+  <div class="legend"><span>● R = robot</span><span>G = destination</span><span>S = start</span><span>▧ = rock / obstacle</span><span>· = traveled path</span></div>
+  <div class="controls"><label>Replay tick <input id="seek" type="range" min="0" value="0"></label></div>
+  <p>Playback reads recorded events; it does not control hardware. Stops remain latched at the recorded position. Reset or changing scenario starts a fresh replay; seeking only inspects history. Faults scheduled after arrival are not injected.</p>
+</main>
+<script id="replay-data" type="application/json">__REPLAY_DATA__</script>
+<script>
+"use strict";
+const data = JSON.parse(document.getElementById("replay-data").textContent);
+const el = id => document.getElementById(id);
+const reasons = {COMMUNICATION_LOSS: "LINK LOSS", EMERGENCY_STOP: "E-STOP", UNAUTHORIZED_COMMAND: "UNAUTHORIZED COMMAND"};
+let trial = data.trials[0], index = 0, timer = null;
+const ns = "http://www.w3.org/2000/svg";
+function svg(tag, attrs, text) {
+  const node = document.createElementNS(ns, tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (text !== undefined) node.textContent = text;
+  el("map").appendChild(node);
+  return node;
+}
+function pause() { clearTimeout(timer); timer = null; el("play").textContent = "Play"; }
+function draw() {
+  const event = trial.events[index - 1];
+  const position = event ? event.position : data.start;
+  const stopped = event && event.event !== "MOVE";
+  const finished = index === trial.events.length;
+  const status = stopped ? "SAFE STOP — " + reasons[event.event] :
+    finished ? trial.status.replaceAll("_", " ") : index ? "MOVING" : "READY";
+  el("status").textContent = status;
+  el("status").className = stopped ? "stop" : finished ? "done" : "";
+  el("detail").textContent = `Tick ${event ? event.tick : 0} · Position (${position.join(", ")}) · ${index}/${trial.events.length} recorded events · Fault tick ${data.fault_tick}`;
+  el("seek").max = trial.events.length;
+  el("seek").value = index;
+  el("play").disabled = el("step").disabled = finished;
+  const map = el("map");
+  map.replaceChildren();
+  map.setAttribute("viewBox", `0 0 ${data.grid[0].length * 40} ${data.grid.length * 40}`);
+  svg("title", {id: "map-title"}, "Fictional underground grid");
+  svg("desc", {id: "map-desc"}, `${status}. Robot at ${position}. G marks the destination; shaded cells are obstacles.`);
+  data.grid.forEach((row, y) => [...row].forEach((cell, x) => {
+    svg("rect", {x:x*40, y:y*40, width:40, height:40, fill:cell==="#"?"#536371":"#202f3b", stroke:"#111b24"});
+    if (cell === "#") svg("path", {d:`M${x*40+5} ${y*40+30}l25 -25`, stroke:"#82919b"});
+    if (cell === "S" || cell === "G") svg("text", {x:x*40+20,y:y*40+26,"text-anchor":"middle",fill:cell==="G"?"#84ffb4":"#c5d2dc","font-weight":"bold"},cell);
+  }));
+  for (const e of trial.events.slice(0,index).filter(e=>e.event==="MOVE")) svg("circle", {cx:e.position[0]*40+20,cy:e.position[1]*40+20,r:3,fill:"#75d6ff"});
+  const [x,y] = position;
+  svg("circle", {cx:x*40+20,cy:y*40+20,r:16,fill:stopped?"#b12639":"#75d6ff",stroke:stopped?"#fff":"#111b24","stroke-width":3});
+  svg("text", {x:x*40+20,y:y*40+26,"text-anchor":"middle",fill:stopped?"#fff":"#111b24","font-weight":"bold"},stopped?"!":"R");
+}
+function advance() { if (index < trial.events.length) index++; draw(); }
+function loop() {
+  advance();
+  if (index < trial.events.length) timer = setTimeout(loop, Number(el("speed").value));
+  else pause();
+}
+el("play").onclick = () => { if (timer !== null) pause(); else { el("play").textContent="Pause"; timer=setTimeout(loop,Number(el("speed").value)); } };
+el("step").onclick = () => { pause(); advance(); };
+el("reset").onclick = () => { pause(); index=0; draw(); };
+el("scenario").onchange = () => { pause(); trial=data.trials[Number(el("scenario").value)]; index=0; draw(); };
+el("seek").oninput = () => { pause(); index=Number(el("seek").value); draw(); };
+draw();
+</script>
+</html>

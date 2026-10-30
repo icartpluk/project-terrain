@@ -19,3 +19,9 @@ jobs:
 
       - name: Run 100 seeded simulation trials
         run: python simulation/batch.py --trials 100 --seed 20261030 --output results
+
+      - name: Check animation playback controller
+        run: |
+          python simulation/animate.py
+          node simulation/test_replay.cjs
+
