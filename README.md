@@ -7,7 +7,7 @@ A research and engineering proposal exploring whether modified Tesla Optimus hum
 **Status:** Concept proposal; not an operational plan, Tesla affiliation, or demonstrated capability.
 
 ## Watch the grid simulation
-Generate an offline animation with `python simulation/animate.py`, then open `results/animation.html` in your browser. See [local run instructions and controls](simulation/README.md) for navigation and safety-stop scenarios. No third-party packages are required.
+On Windows, double-click **START-DEMO.bat** after downloading and extracting the repository. Or run `python simulation/start.py` on any platform to generate the offline animation and open it in your browser. Python 3.11 or newer is required to generate it; the resulting HTML file opens on its own without Python. See [local run instructions and controls](simulation/README.md) for navigation and safety-stop scenarios. No third-party packages are required.
 
 ## Project documents
 - [Original proposal — preserved wording](docs/original-proposal.md)

@@ -12,7 +12,7 @@ function element(id) {
 }
 element('replay-data').textContent = data;
 element('speed').value = '600';
-let scheduled = null;
+let scheduled = null, focusedElement=null;
 let savedBlob, revoked=false;
 const context = vm.createContext({
   Blob,
@@ -170,6 +170,17 @@ assert.equal(element('status').textContent,'READY');
 assert.equal(element('live-estop').disabled,true);
 assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(worlds)',context)),bank);
 console.log('Live-stop checks passed: all causes, first/intermediate/final positions, latch, stale callbacks, reset and disabled states.');
+
+element('scenario').value='0'; element('scenario').onchange();
+element('play').onclick(); scheduled(); element('play').onclick();
+assert.equal(element('status').textContent,'PAUSED');
+const neighbor=element('editor').children[width+3];
+neighbor.focus=()=>{focusedElement=neighbor;};
+let prevented=false;
+element('editor').children[width+2].onkeydown({key:'ArrowRight',preventDefault(){prevented=true;}});
+assert.equal(prevented,true);
+assert.equal(focusedElement,neighbor);
+element('reset').onclick();
 
 (async()=>{
   element('edit-tool').value='obstacle'; clickCell(2,1);

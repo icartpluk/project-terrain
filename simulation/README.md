@@ -7,10 +7,16 @@ A standard-library Python model of a generic robot moving through a fictional un
 From the repository root with Python 3.11 or newer:
 
 ```sh
-python simulation/animate.py
+python simulation/start.py
 ```
 
-Open `results/animation.html` in a modern web browser by double-clicking it. No packages, server, or internet connection are needed. On Windows, `py` can be used in place of `python` if that is how Python is installed.
+This generates `results/animation.html` and opens it in your default browser. On Windows, you can instead double-click **START-DEMO.bat** in the repository folder. Extract the repository ZIP first if you downloaded it from GitHub. Python 3.11 or newer must already be installed; no packages, server, or internet connection are needed to run the demo.
+
+If the browser does not open, double-click `results/animation.html` manually. You can keep or share that single HTML file; recipients only need a modern browser, with JavaScript enabled. It does not require Python once generated. If an in-app preview cannot open or scroll the file, open the HTML in your normal browser.
+
+To generate without opening a browser: `python simulation/start.py --no-open`. The launcher always writes to the repository's `results` folder even when run from another folder. The advanced exporter `python simulation/animate.py` still supports seed, map count, fault tick and output options.
+
+The main view keeps Play, Reset, New map, the stop buttons and the robot together. Expand **Playback tools** for Step, speed and seeking. Expand **Choose, save or load a map** for the full map list and files. On narrow screens, scroll sideways within the editing grid. Keyboard users can tab to controls and use arrow keys between editable cells. PAUSED indicates a replay with moves that is currently paused.
 
 Choose **Normal navigation**, **Link loss**, **E-stop**, or **Unauthorized command**, then click **Play**. Use **Pause**, **Step**, **Reset**, the tick slider, and the tick duration selector to inspect the replay. The map shows obstacles, start S, destination G, the traveled path, and robot R. A stopped robot becomes a red `!`, with a persistent **SAFE STOP** banner naming the cause. Text labels distinguish states without relying on color.
 
@@ -44,7 +50,7 @@ The scenario selector still demonstrates scheduled faults at the configured faul
 
 ## Edit a map
 
-Open **Edit this map** below the status banner. Choose **Toggle obstacle** and click a cell in the editing grid to add or remove an obstacle. Choose **Set destination** and click a cell to move G there (including clearing an obstacle). Start S and boundary cells stay fixed; obstacles cannot replace G. Cells are keyboard-accessible buttons.
+Open **Edit this map** below the map. Choose **Toggle obstacle** and click a cell in the editing grid to add or remove an obstacle. Choose **Set destination** and click a cell to move G there (including clearing an obstacle). Start S and boundary cells stay fixed; obstacles cannot replace G. Cells are keyboard-accessible buttons.
 
 Every edit pauses playback, clears the old trail, and recomputes all four scenarios. Press **Play** to watch the new route. A blocked destination reports **NO ROUTE**. **Reset** restarts the edited replay; **Restore map** discards edits and reloads the selected original map. Changing maps or closing/reloading the file also discards edits. The label **Custom map (unsaved)** distinguishes edited maps from the displayed original seeds.
 
@@ -52,7 +58,7 @@ Editing works offline without a server. Exported maps use Python-recorded events
 
 ## Save and load layouts
 
-Click **Save map** above the scenario controls to download `terrain-map.json`. Keep the file in a folder you can find. It contains the current layout and fault tick, including obstacle and destination edits. Your browser may ask where to save it.
+Expand **Choose, save or load a map** and click **Save map** to download `terrain-map.json`. Keep the file in a folder you can find. It contains the current layout and fault tick, including obstacle and destination edits. Your browser may ask where to save it.
 
 Use **Load map** to select that JSON file later. Playback pauses, all four scenarios are recomputed, and the loaded map starts at tick zero using the selected scenario. Files stay on your computer; no upload or server is involved. A loaded layout is a custom map; **Restore map** returns to the selected built-in map. Save again after making further edits.
 
