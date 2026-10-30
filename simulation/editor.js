@@ -69,6 +69,7 @@ function drawEditor() {
   const editor=el("editor");
   editor.replaceChildren();
   editor.style.gridTemplateColumns=`repeat(${data.grid[0].length}, 1fr)`;
+  editor.style.minWidth=(data.grid[0].length*30)+"px";
   data.grid.forEach((row,y)=>[...row].forEach((cell,x)=>{
     const button=document.createElement("button");
     button.type="button"; button.textContent=cell==="."?"·":cell;
@@ -76,6 +77,17 @@ function drawEditor() {
     button.disabled=x===0 || y===0 || y===data.grid.length-1 || x===row.length-1 || cell==="S";
     button.setAttribute("aria-label",`Cell ${x}, ${y}: ${{".":"open","#":"obstacle",S:"start",G:"destination",O:"foam marker"}[cell]}`);
     button.onclick=()=>editCell(x,y);
+    button.onkeydown=event=>{
+      const delta={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[event.key];
+      if(!delta) return;
+      event.preventDefault();
+      let nx=x+delta[0], ny=y+delta[1];
+      while(nx>=0 && ny>=0 && ny<data.grid.length && nx<row.length) {
+        const next=editor.children[ny*row.length+nx];
+        if(!next.disabled) { next.focus(); break; }
+        nx+=delta[0]; ny+=delta[1];
+      }
+    };
     editor.appendChild(button);
   }));
 }
