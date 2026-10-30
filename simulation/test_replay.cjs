@@ -14,7 +14,8 @@ element('replay-data').textContent = data;
 element('speed').value = '600';
 let scheduled = null;
 vm.runInNewContext(code, {
-  document:{getElementById:element, createElementNS:()=>element('node'+Math.random())},
+  document:{getElementById:element, createElement:()=>element('option'+Math.random()),
+    createElementNS:()=>element('node'+Math.random())},
   setTimeout:fn=>{scheduled=fn;return 1;}, clearTimeout:()=>{scheduled=null;}
 });
 assert.equal(element('status').textContent, 'READY');
@@ -43,4 +44,36 @@ while(scheduled) scheduled();
 assert.equal(element('status').textContent, 'GOAL REACHED');
 assert.equal(element('play').disabled,true);
 assert.equal(element('play').textContent,'Play');
+const bank = JSON.parse(data).maps;
+assert.ok(bank.length > 2);
+element('play').onclick();
+element('new-map').onclick();
+assert.equal(scheduled, null);
+assert.equal(Number(element('world').value), 1);
+assert.match(element('map-info').textContent, new RegExp(String(bank[1].seed)));
+for (let i=1;i<bank.length;i++) {
+  element('world').value=String(i); element('world').onchange();
+  for (let scenario=0;scenario<4;scenario++) {
+    element('scenario').value=String(scenario); element('scenario').onchange();
+    const expected=bank[i].trials[scenario];
+    if (expected.status==='NO_ROUTE') {
+      assert.equal(element('status').textContent,'NO ROUTE');
+      assert.equal(element('play').disabled,true);
+    } else {
+      assert.equal(element('status').textContent,'READY');
+      element('play').onclick();
+      while(scheduled) scheduled();
+      assert.ok(element('detail').textContent.includes('Position ('+expected.final_position.join(', ')+')'));
+      assert.equal(element('status').textContent, expected.safe_stop
+        ? 'SAFE STOP — '+({link_loss:'LINK LOSS',estop:'E-STOP',unauthorized:'UNAUTHORIZED COMMAND'})[expected.scenario]
+        : 'GOAL REACHED');
+    }
+  }
+}
+element('new-map').onclick();
+assert.equal(Number(element('world').value),1);
+element('world').value='0'; element('world').onchange();
+assert.equal(Number(element('world').value),0);
+assert.equal(element('status').textContent,'READY');
+console.log('Map checks passed: selection, timer cancellation, bank wraparound, every seeded scenario, and unreachable maps.');
 console.log('Playback checks passed: play/pause, step, reset, seek, all three latched stops, and arrival.');
