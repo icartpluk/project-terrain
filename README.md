@@ -15,6 +15,8 @@ On Windows, double-click **START-DEMO.bat** after downloading and extracting the
 - [Robotic system requirements](docs/robotics-requirements.md)
 - [Independent safety and cybersecurity](docs/safety-and-cybersecurity.md)
 - [Simulation and validation plan](docs/simulation-plan.md)
+- [Safety validation gates](docs/safety-validation-gates.md)
+- [Development status and next steps](docs/development-status.md)
 
 ## Scope and safeguards
 The project is limited to conceptual design, safety engineering, simulation, and controlled demonstrations. Any real nuclear-material recovery would require authorization, nuclear-safety specialists, radiation protection, physical security, and applicable international and domestic legal compliance. The project does not provide procedures for accessing, extracting, transporting, or processing nuclear material.
