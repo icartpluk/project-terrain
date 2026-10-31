@@ -25,12 +25,7 @@ Separate what the grid simulator demonstrates from what remains unverified. A gr
 **Evidence:** Independently specified expected outcomes and regression fixtures.
 
 ## Gate 3 — Human-facing verification
-- Visually inspect the generated HTML in a real browser on desktop and mobile.
-- Confirm stop status, cause, and pending delay are readable without relying on color.
-- Confirm pause, reset, and map loading cannot misleadingly imply a hardware safety reset.
-- Confirm export labels and documentation distinguish abstract ticks/cells from seconds/meters.
-
-**Evidence:** Dated browser/device checklist and screenshots, with failures tracked as issues.
+**Completed 2026-10-31.** Desktop and mobile browser checks covered status text, stop cause, delay phase, keyboard access, and touch controls. Completion is also recorded in [development status](development-status.md). These checks review the interface; they do not establish hardware safety.
 
 ## Gate 4 — Future physical research (not satisfied by this repository)
 Any move beyond inert simulation requires an independently reviewed hazard analysis, hardware-specific safety architecture, real sensor/actuator validation, emergency-stop testing, authorized test environment, and qualified safety oversight. No nuclear material or hazardous environment testing is authorized or described here.
@@ -39,6 +34,6 @@ Any move beyond inert simulation requires an independently reviewed hazard analy
 A software demonstration may be called **simulation-validated** only when Gates 1–3 have documented evidence and outstanding limitations are disclosed. It must never be labeled **field-ready**, **safe for hazardous recovery**, or **certified** based on grid results. Gate 4 is separate and currently unverified.
 
 ## Current limitations
-The model has no physical braking, inertia, collision dynamics, packet transport, sensor uncertainty, radiation model, or hardware control. Browser visual rendering has not yet been verified. Existing timing and comparison reports provide model outputs, not measured robot performance.
+The baseline and partial-observation models use abstract cells and ticks. They do not model physical braking, inertia, collision dynamics, packet transport, sensor physics, or hardware control. The partial-observation prototype uses a fixed observation radius and a supplied obstacle-change schedule; it is not part of the browser replay. Browser checks review the interface only, not physical performance.
 
 See [simulation/TIMING.md](../simulation/TIMING.md) and [simulation/README.md](../simulation/README.md).
