@@ -11,7 +11,7 @@
 - Existing CI runs the Python and JavaScript simulation tests on Ubuntu and Windows; the regression matrix passed both before PR #12 merged.
 - Desktop and mobile browser checks are complete for status text, stop cause, delay phase, keyboard access, and touch controls.
 - Deterministic map-file parser checks cover valid-input repeatability, the size boundary, and generated malformed-input cases.
-- A separate Python prototype now explores with a limited observation radius, treats unseen cells as blocked, and replans around scripted interior obstacle changes.
+- PR #15 added the limited-observation Python model; PR #17 integrated it into the offline browser demo with deterministic Python/browser parity checks. Ubuntu and Windows checks passed before merge.
 
 ## Current limits and unresolved work
 
@@ -23,7 +23,7 @@
 
 ## Recommended next steps
 
-1. Review the browser partial-observation integration and require green Ubuntu and Windows checks before merging.
+1. Complete a desktop and mobile usability pass of the new limited-view panel and record any failures as issues.
 2. Keep future modeling inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
 
 ## Release language
