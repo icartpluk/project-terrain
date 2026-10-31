@@ -30,6 +30,9 @@
   #status.pending { color: #fff3c4; background: #604515; border-color: #ffd66e; }
   .safety button { background: #8d2230; color: white; border: 2px solid #ffb4b4; }
   #map { display: block; width: 100%; height: 44vh; min-height: 200px; max-height: 460px; margin: 12px auto; }
+  #partial-observation { margin: 28px 0; padding: 16px; border: 1px solid #536371; border-radius: 8px; }
+  #partial-map { overflow: auto; padding: 12px; background: #202f3b; color: #ecf3f8; font: 600 1rem/1.5 ui-monospace, monospace; letter-spacing: .12em; }
+  #partial-status { min-height: 1.5em; font-weight: 700; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; }
   .legend span { white-space: nowrap; }
   input { max-width: 100%; }
@@ -71,6 +74,16 @@
   <div class="legend"><span>R = robot</span><span>G = destination</span><span>S = start</span><span>▧ = obstacle</span><span>O = traversable foam</span><span>· = trail</span></div>
   <p id="detail"></p>
   <p id="delay-comparison"></p>
+  <section id="partial-observation" aria-labelledby="partial-heading">
+    <h2 id="partial-heading">Limited-view exploration</h2>
+    <p>This separate replay shows only cells observed so far. ? means unknown; each step explores and replans around a scripted grid change. Coordinates are abstract cells.</p>
+    <div class="controls">
+      <button id="partial-step" type="button" aria-controls="partial-map partial-status">Step exploration</button>
+      <button id="partial-reset" type="button" aria-controls="partial-map partial-status">Reset exploration</button>
+    </div>
+    <p id="partial-status" role="status" aria-live="polite"></p>
+    <pre id="partial-map" role="img" aria-labelledby="partial-heading partial-status"></pre>
+  </section>
   <p id="edit-message" role="status" aria-live="polite"></p>
   <details>
     <summary>Communication and stopping delays</summary>
@@ -199,6 +212,28 @@ function draw() {
   svg("circle", {cx:x*40+20,cy:y*40+20,r:16,fill:stopped?"#b12639":pending?"#ffd66e":"#75d6ff",stroke:stopped?"#fff":"#111b24","stroke-width":3});
   svg("text", {x:x*40+20,y:y*40+26,"text-anchor":"middle",fill:stopped?"#fff":"#111b24","font-weight":"bold"},stopped?"!":"R");
 }
+const partialReplay = payload.partial_observation;
+let partialIndex = 0;
+function drawPartialObservation() {
+  if (!partialReplay) return;
+  const frame = partialReplay.frames[partialIndex];
+  const [rx, ry] = frame.position;
+  const visibleMap = frame.known_map.map((row, y) => [...row].map((cell, x) =>
+    x === rx && y === ry ? "R" : cell).join(""));
+  el("partial-map").textContent = visibleMap.join("\n");
+  const final = partialIndex === partialReplay.frames.length - 1;
+  const outcome = final ? partialReplay.status.replaceAll("_", " ") : frame.event.replaceAll("_", " ");
+  el("partial-status").textContent = `${outcome} · Tick ${frame.tick} · Robot at (${rx}, ${ry}) · ${frame.visible_cells} cells observed · Sensor radius ${partialReplay.sensor_radius_cells} cell`;
+  el("partial-step").disabled = final;
+}
+el("partial-step").onclick = () => {
+  if (partialIndex < partialReplay.frames.length - 1) partialIndex++;
+  drawPartialObservation();
+};
+el("partial-reset").onclick = () => {
+  partialIndex = 0;
+  drawPartialObservation();
+};
 function advance() {
   if (!liveStop && index < trial.events.length) index++;
   if(liveActive && reasons[trial.events[index-1]?.event]) liveStop=trial.events[index-1];
@@ -248,6 +283,7 @@ el("new-map").disabled = worlds.length < 2;
 el("new-map").onclick = () => changeWorld(worldIndex + 1 < worlds.length ? worldIndex + 1 : 1);
 __EDITOR_CODE__
 draw();
+drawPartialObservation();
 drawEditor();
 syncDelayInputs();
 </script>

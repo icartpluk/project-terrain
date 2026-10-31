@@ -23,6 +23,20 @@ class PartialObservationTests(unittest.TestCase):
             self.branching_map, sensor_radius=1, obstacle_changes=changes)
         self.assertEqual(first, second)
 
+    def test_frames_record_only_the_known_map_at_each_tick(self):
+        result = simulate_partial_observation(
+            self.branching_map, sensor_radius=1,
+            obstacle_changes=[{"tick": 2, "position": [2, 1], "blocked": True}],
+        )
+        frames = result["frames"]
+        self.assertEqual(frames[0]["tick"], 0)
+        self.assertIn("?", "".join(frames[0]["known_map"]))
+        self.assertEqual(frames[-1]["position"], result["position"])
+        self.assertEqual(frames[-1]["known_map"], result["known_map"])
+        self.assertTrue(all("environment_map" not in frame for frame in frames))
+        self.assertEqual([frame["tick"] for frame in frames],
+                         sorted(frame["tick"] for frame in frames))
+
     branching_map = (
         "#########",
         "#.......#",

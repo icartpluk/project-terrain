@@ -6,8 +6,30 @@ from pathlib import Path
 from sim import GRID, locate, simulate
 from batch import generate_environment
 from timing import simulate_timed
+from partial_observation import simulate_partial_observation
 
 SCENARIOS = ("normal", "link_loss", "estop", "unauthorized")
+PARTIAL_GRID = (
+    "#########",
+    "#.......#",
+    "#S.###.G#",
+    "#.......#",
+    "#########",
+)
+
+
+def partial_observation_replay():
+    """Return only the frames the offline browser is allowed to display."""
+    result = simulate_partial_observation(
+        PARTIAL_GRID, sensor_radius=1,
+        obstacle_changes=[{"tick": 2, "position": [2, 1], "blocked": True}],
+    )
+    return {
+        "sensor_radius_cells": result["sensor_radius_cells"],
+        "status": result["status"],
+        "moves": result["moves"],
+        "frames": result["frames"],
+    }
 
 
 def replay_data(fault_tick=8, grid=GRID, communication_delay=0, stopping_delay=0):
@@ -35,7 +57,8 @@ def map_collection(fault_tick=8, seed=20261030, maps=20, communication_delay=0, 
         worlds.append(dict(replay_data(fault_tick, generate_environment(world_seed), communication_delay, stopping_delay),
                            label=f"Seed {world_seed}", seed=world_seed))
     # Preserve the single-map data fields for existing replay-data consumers.
-    return dict(worlds[0], maps=worlds)
+    return dict(worlds[0], maps=worlds,
+                partial_observation=partial_observation_replay())
 
 
 def render_html(data):

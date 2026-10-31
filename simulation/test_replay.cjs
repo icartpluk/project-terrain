@@ -23,6 +23,21 @@ const context = vm.createContext({
 });
 vm.runInContext(code, context);
 assert.equal(element('status').textContent, 'READY');
+const partialStart = element('partial-map').textContent;
+assert.match(partialStart, /\?/);
+assert.match(element('partial-status').textContent, /Tick 0/);
+assert.equal(element('partial-step').disabled, false);
+assert.equal(element('partial-reset').disabled, undefined);
+element('partial-step').onclick();
+assert.notEqual(element('partial-map').textContent, partialStart);
+assert.match(element('partial-status').textContent, /Tick 1/);
+while (!element('partial-step').disabled) element('partial-step').onclick();
+assert.match(element('partial-status').textContent, /GOAL REACHED/);
+element('partial-reset').onclick();
+assert.equal(element('partial-map').textContent, partialStart);
+assert.match(element('partial-status').textContent, /Tick 0/);
+const partialPayload = JSON.parse(vm.runInContext('JSON.stringify(payload.partial_observation)',context));
+assert.deepEqual(Object.keys(partialPayload).sort(),['frames','moves','sensor_radius_cells','status']);
 element('play').onclick();
 assert.equal(element('play').textContent, 'Pause');
 scheduled();
@@ -91,6 +106,14 @@ const python=spawnSync(process.env.PYTHON || 'python', ['-c',
   'import sys,json; sys.path.insert(0,"simulation"); from sim import simulate; grids=json.load(sys.stdin); print(json.dumps([[simulate(s,t,g) for s in ("normal","link_loss","estop","unauthorized")] for g in grids for t in (1,8,1000)]))'],
   {input:JSON.stringify(fixtures),encoding:'utf8'});
 assert.equal(python.status,0,python.stderr);
+const partialPython=spawnSync(process.env.PYTHON || 'python',['-c',
+  'import json,sys; sys.path.insert(0,"simulation"); from partial_observation import simulate_partial_observation; r=simulate_partial_observation(("#########","#.......#","#S.###.G#","#.......#","#########"),sensor_radius=1,obstacle_changes=[{"tick":2,"position":[2,1],"blocked":True}]); print(json.dumps({"frames":r["frames"],"moves":r["moves"],"sensor_radius_cells":r["sensor_radius_cells"],"status":r["status"]}))'],
+  {encoding:'utf8'});
+assert.equal(partialPython.status,0,partialPython.stderr);
+assert.deepEqual(partialPayload,JSON.parse(partialPython.stdout));
+assert.equal(partialPayload.frames.at(-1).event,'MOVE');
+assert.ok(partialPayload.frames.some(frame=>frame.known_map.some(row=>row.includes('#')&&row.includes('?'))));
+console.log('Partial-observation checks passed: Python parity, hidden map data, initial unknown cells, step/reset and completion state.');
 const expected=JSON.parse(python.stdout);
 let fixtureIndex=0;
 for(const grid of fixtures) for(const tick of [1,8,1000]) {

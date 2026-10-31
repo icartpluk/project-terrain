@@ -15,14 +15,15 @@
 
 ## Current limits and unresolved work
 
-- The partial-observation experiment is currently a Python model, not part of the browser replay. It uses abstract grid cells and ticks, a fixed observation radius, and a supplied event schedule; it does not model sensor physics, physical obstacle motion, braking, collisions, or hardware.
+- The partial-observation experiment is integrated into the offline browser replay as a separate, deterministic scenario. The browser receives only recorded known-map frames, not the hidden map or obstacle schedule; controls are native step and reset buttons.
+- The partial-observation scenario uses abstract grid cells and ticks, a fixed observation radius, and a supplied event schedule; it does not model sensor physics, physical obstacle motion, braking, collisions, or hardware.
 - Independent safety controls and cybersecurity protections remain conceptual requirements. This repository has no physical safety controller, actuator interface, network command path, or hardware E-stop.
 - Seeded reports are reproducible model outputs; they are not measured robot performance or evidence of readiness for hazardous environments.
 - Passing software checks validate only the modeled behavior; they do not establish hardware safety.
 
 ## Recommended next steps
 
-1. Integrate the limited-observation scenario into the offline browser demo and verify Python/browser parity and accessible controls.
+1. Review the browser partial-observation integration and require green Ubuntu and Windows checks before merging.
 2. Keep future modeling inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
 
 ## Release language
