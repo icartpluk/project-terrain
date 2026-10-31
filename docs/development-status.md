@@ -1,7 +1,8 @@
 # Development status and next steps
 
 **Reviewed:** 2026-10-31  
-**Scope:** Inert, offline grid simulation and conceptual engineering only.
+**Scope:** Inert, offline grid simulation and conceptual engineering only.  
+**Phase status:** Complete — the current offline simulation, validation, and browser-usability scope is finished. Physical research remains outside this phase and its oversight gate is not satisfied.
 
 ## Progress
 
@@ -24,7 +25,7 @@
 
 ## Recommended next steps
 
-1. Keep future modeling inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
+No further work is pending for the current offline-simulation scope. Any future modeling should stay inert and generic. Physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
 
 ## Release language
 
