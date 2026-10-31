@@ -34,4 +34,4 @@ jobs:
 
       - name: Check Windows demo launcher without opening a browser
         if: runner.os == 'Windows'
-        run: .\\START-DEMO.bat --no-open
+        run: .\START-DEMO.bat --no-open
