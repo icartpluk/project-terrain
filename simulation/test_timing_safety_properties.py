@@ -1,7 +1,7 @@
 """Safety-property regression cases for the inert delayed-fault model."""
 import unittest
 
-from sim import simulate
+from sim import locate, simulate
 from timing import simulate_timed
 
 
@@ -16,7 +16,7 @@ class TimedSafetyPropertyTests(unittest.TestCase):
 
     def test_fault_at_each_motion_tick_preserves_stop_and_path_invariants(self):
         baseline = simulate("normal", grid=self.grid)
-        path = [baseline["events"][0]["position"]]
+        path = [list(locate("S", self.grid))]
         path.extend(event["position"] for event in baseline["events"])
         steps = baseline["planned_steps"]
 
@@ -62,8 +62,10 @@ class TimedSafetyPropertyTests(unittest.TestCase):
                             result["events"][-1]["tick"],
                             fault_tick + latency,
                         )
-                        self.assertEqual(result["events"][-1]["position"],
-                                         result["final_position"])
+                        self.assertEqual(
+                            result["events"][-1]["position"],
+                            result["final_position"],
+                        )
 
     def test_estop_ignores_maximum_communication_delay(self):
         result = simulate_timed(
