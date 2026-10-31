@@ -10,6 +10,7 @@
 - New checks pin expected position, move count, stop cause, stop tick, and handling of arrival during a delayed stop. The same fixture is rerun to check deterministic output.
 - Existing CI runs the Python and JavaScript simulation tests on Ubuntu and Windows; the regression matrix passed both before PR #12 merged.
 - Desktop and mobile browser checks are complete for status text, stop cause, delay phase, keyboard access, and touch controls.
+- Deterministic map-file parser checks cover valid-input repeatability, the size boundary, and generated malformed-input cases.
 
 ## Current limits and unresolved work
 
@@ -20,8 +21,7 @@
 
 ## Recommended next steps
 
-1. If editor or save/load behavior changes, add deterministic map-file parsing and malformed-input property cases.
-2. Keep future modeling work inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
+1. Keep future modeling work inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
 
 ## Release language
 
