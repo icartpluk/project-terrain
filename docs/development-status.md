@@ -9,7 +9,8 @@
 - The timing model has regression coverage for all modeled fault types at each motion tick, zero and asymmetric delays, and the maximum supported delays.
 - New checks pin expected position, move count, stop cause, stop tick, and handling of arrival during a delayed stop. The same fixture is rerun to check deterministic output.
 - Existing CI runs the Python and JavaScript simulation tests on Ubuntu and Windows; the regression matrix passed both before PR #12 merged.
-- Desktop and mobile browser checks are complete for status text, stop cause, delay phase, keyboard access, and touch controls.
+- Desktop and mobile browser checks passed for status text, stop cause, delay phase, keyboard access, and touch controls.
+- The limited-view exploration panel also passed a desktop and mobile usability check.
 - Deterministic map-file parser checks cover valid-input repeatability, the size boundary, and generated malformed-input cases.
 - PR #15 added the limited-observation Python model; PR #17 integrated it into the offline browser demo with deterministic Python/browser parity checks. Ubuntu and Windows checks passed before merge.
 
@@ -23,8 +24,7 @@
 
 ## Recommended next steps
 
-1. Complete a desktop and mobile usability pass of the new limited-view panel and record any failures as issues.
-2. Keep future modeling inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
+1. Keep future modeling inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
 
 ## Release language
 
