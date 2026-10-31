@@ -114,6 +114,18 @@ def simulate_partial_observation(grid=GRID, sensor_radius=1,
     initial_observation = ["".join(cell or "?" for cell in row)
                            for row in observation]
 
+    def snapshot(tick, event):
+        return {
+            "tick": tick,
+            "position": list(position),
+            "event": event,
+            "visible_cells": sum(cell is not None for row in observation for cell in row),
+            "known_map": ["".join(cell or "?" for cell in row)
+                          for row in observation],
+        }
+
+    frames = [snapshot(0, "READY")]
+
     by_tick = {}
     for tick, x, y, blocked in changes:
         by_tick.setdefault(tick, []).append((x, y, blocked))
@@ -158,6 +170,7 @@ def simulate_partial_observation(grid=GRID, sensor_radius=1,
                 "position": list(position),
                 "newly_observed_cells": visible_after - visible_before,
             })
+            frames.append(snapshot(tick, "NO_KNOWN_ROUTE"))
             break
 
         next_position = path[1]
@@ -173,6 +186,7 @@ def simulate_partial_observation(grid=GRID, sensor_radius=1,
             "tick": tick, "event": "MOVE", "position": list(position),
             "newly_observed_cells": visible_after - visible_before,
         })
+        frames.append(snapshot(tick, "MOVE"))
         if position == goal:
             status = "GOAL_REACHED"
             break
@@ -193,4 +207,5 @@ def simulate_partial_observation(grid=GRID, sensor_radius=1,
         ],
         "environment_events": environment_events,
         "events": events,
+        "frames": frames,
     }
