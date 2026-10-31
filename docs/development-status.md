@@ -11,17 +11,19 @@
 - Existing CI runs the Python and JavaScript simulation tests on Ubuntu and Windows; the regression matrix passed both before PR #12 merged.
 - Desktop and mobile browser checks are complete for status text, stop cause, delay phase, keyboard access, and touch controls.
 - Deterministic map-file parser checks cover valid-input repeatability, the size boundary, and generated malformed-input cases.
+- A separate Python prototype now explores with a limited observation radius, treats unseen cells as blocked, and replans around scripted interior obstacle changes.
 
 ## Current limits and unresolved work
 
-- The model uses abstract grid cells and ticks. It does not model braking, inertia, collisions, sensors, localization error, packet transport, or hardware.
+- The partial-observation experiment is currently a Python model, not part of the browser replay. It uses abstract grid cells and ticks, a fixed observation radius, and a supplied event schedule; it does not model sensor physics, physical obstacle motion, braking, collisions, or hardware.
 - Independent safety controls and cybersecurity protections remain conceptual requirements. This repository has no physical safety controller, actuator interface, network command path, or hardware E-stop.
 - Seeded reports are reproducible model outputs; they are not measured robot performance or evidence of readiness for hazardous environments.
 - Passing software checks validate only the modeled behavior; they do not establish hardware safety.
 
 ## Recommended next steps
 
-1. Keep future modeling work inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
+1. Integrate the limited-observation scenario into the offline browser demo and verify Python/browser parity and accessible controls.
+2. Keep future modeling inert and generic. Any move toward physical research would require qualified independent safety, security, and legal oversight; simulator results do not satisfy that gate.
 
 ## Release language
 
