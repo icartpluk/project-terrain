@@ -9,6 +9,8 @@ A research and engineering proposal exploring whether modified Tesla Optimus hum
 ## Watch the grid simulation
 On Windows, double-click **START-DEMO.bat** after downloading and extracting the repository. Or run `python simulation/start.py` on any platform to generate the offline animation and open it in your browser. Python 3.11 or newer is required to generate it; the resulting HTML file opens on its own without Python. See [local run instructions and controls](simulation/README.md) for navigation and safety-stop scenarios. No third-party packages are required.
 
+The offline replay also includes a separate limited-view exploration panel. It advances through deterministic, precomputed observation frames, marks unseen cells with `?`, and uses abstract grid cells and a scripted map change. It does not model real sensors, physical obstacle motion, or robot control.
+
 ## Project documents
 - [Original proposal — preserved wording](docs/original-proposal.md)
 - [Mission and feasibility](docs/mission-and-feasibility.md)
