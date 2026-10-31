@@ -16,7 +16,7 @@
 - The model uses abstract grid cells and ticks. It does not model braking, inertia, collisions, sensors, localization error, packet transport, or hardware.
 - Independent safety controls and cybersecurity protections remain conceptual requirements. This repository has no physical safety controller, actuator interface, network command path, or hardware E-stop.
 - Seeded reports are reproducible model outputs; they are not measured robot performance or evidence of readiness for hazardous environments.
-- The PR test matrix still needs to pass CI before its coverage can be treated as validated.
+- The new regression matrix is checked by CI on Ubuntu and Windows. Passing software checks validate only the modeled behavior; they do not establish hardware safety.
 
 ## Recommended next steps
 
