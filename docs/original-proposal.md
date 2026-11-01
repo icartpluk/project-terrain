@@ -2,9 +2,7 @@
 
 This text was entered during repository setup as a reconstruction of the October 23, 2026 discussion. **It has not been verified against the original spoken transcript and must not be described as verbatim.** The original wording should be recovered and checked before treating this file as an archival record. The text below is retained unchanged pending that verification.
 
-> Subject: Project TERRAIN proposal for Tesla Optimus.
->
-> Dear Elon Musk and the Optimus team,
+
 >
 > I’m proposing Project TERRAIN — Teleoperated Exploration, Recovery Robotics, and Autonomous Infrastructure Navigation.
 >
