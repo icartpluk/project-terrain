@@ -22,6 +22,6 @@ This text was entered during repository setup as a reconstruction of the October
 >
 > Sincerely,
 >
-> I’ll also keep checking for a verified mailing address or official submission channel so you’re not sending it into the void.
 
-**Editorial note:** The final sentence beginning “I’ll also keep checking” appears to be an assistant comment, not part of the letter. Its precise original wording is unverified. Exclude it from external drafts.
+
+
