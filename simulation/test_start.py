@@ -20,7 +20,7 @@ class StartTests(unittest.TestCase):
             browser.assert_called_once_with(target.resolve().as_uri())
             html = result.read_text(encoding="utf-8")
             payload = html.split('<script id="simulation-data" type="application/json">')[1].split("</script>")[0]
-            self.assertEqual(len(json.loads(payload)["trials"]), 4)
+            self.assertEqual(len(json.loads(payload)["worlds"]), 21)
             self.assertIn("Operations view", html)
             self.assertNotIn("__SIMULATION_DATA__", html)
 

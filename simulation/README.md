@@ -16,7 +16,7 @@ If the browser does not open, double-click `results/operations-dashboard.html` m
 
 To generate without opening a browser: `python simulation/start.py --no-open`. The launcher always writes to the repository's `results` folder even when run from another folder. For the previous full-featured replay, run `python simulation/start.py --detailed-replay` (or use `--output results/animation.html` to keep a separate filename). The advanced exporter `python simulation/animate.py` still supports seed, map count, fault tick and output options.
 
-The operations dashboard is generated from the same canonical Python model: run `python presentation/build.py`, then open `presentation/index.html`. Rebuild it after any simulation-model changes so the embedded route and event data stay in sync. Its browser controls only play back the recorded events.
+The operations dashboard is generated from the same canonical Python model: run `python presentation/build.py`, then open `presentation/index.html`. It includes the original map and 20 seeded maps. Choose a different repeatable seed bank with `python presentation/build.py --seed 42 --maps 30`. Rebuild it after any simulation-model changes so its embedded route and event data stay in sync. Browser controls only play back recorded events.
 
 The main view keeps Play, Reset, New map, the stop buttons and the robot together. Expand **Playback tools** for Step, speed and seeking. Expand **Choose, save or load a map** for the full map list and files. On narrow screens, scroll sideways within the editing grid. Keyboard users can tab to controls and use arrow keys between editable cells. PAUSED indicates a replay with moves that is currently paused.
 
