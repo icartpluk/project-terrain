@@ -16,6 +16,8 @@ If the browser does not open, double-click `results/animation.html` manually. Yo
 
 To generate without opening a browser: `python simulation/start.py --no-open`. The launcher always writes to the repository's `results` folder even when run from another folder. The advanced exporter `python simulation/animate.py` still supports seed, map count, fault tick and output options.
 
+The separate operations dashboard is generated from the same canonical Python model: run `python presentation/build.py`, then open `presentation/index.html`. Rebuild it after any simulation-model changes so the embedded route and event data stay in sync. Its browser controls only play back the recorded events.
+
 The main view keeps Play, Reset, New map, the stop buttons and the robot together. Expand **Playback tools** for Step, speed and seeking. Expand **Choose, save or load a map** for the full map list and files. On narrow screens, scroll sideways within the editing grid. Keyboard users can tab to controls and use arrow keys between editable cells. PAUSED indicates a replay with moves that is currently paused.
 
 Choose **Normal navigation**, **Link loss**, **E-stop**, or **Unauthorized command**, then click **Play**. Use **Pause**, **Step**, **Reset**, the tick slider, and the tick duration selector to inspect the replay. The map shows obstacles, start S, destination G, the traveled path, and robot R. A stopped robot becomes a red `!`, with a persistent **SAFE STOP** banner naming the cause. Text labels distinguish states without relying on color.

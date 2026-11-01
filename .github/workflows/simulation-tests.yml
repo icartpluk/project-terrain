@@ -29,8 +29,10 @@ jobs:
       - name: Check animation playback controller
         run: |
           python simulation/animate.py
+          python presentation/build.py
           node simulation/test_replay.cjs
           node simulation/test_map_file_properties.cjs
+          node presentation/test_dashboard.cjs
 
       - name: Check Windows demo launcher without opening a browser
         if: runner.os == 'Windows'
