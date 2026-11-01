@@ -10,13 +10,13 @@ From the repository root with Python 3.11 or newer:
 python simulation/start.py
 ```
 
-This generates `results/animation.html` and opens it in your default browser. On Windows, you can instead double-click **START-DEMO.bat** in the repository folder. Extract the repository ZIP first if you downloaded it from GitHub. Python 3.11 or newer must already be installed; no packages, server, or internet connection are needed to run the demo.
+This generates `results/operations-dashboard.html` and opens it in your default browser. On Windows, you can instead double-click **START-DEMO.bat** in the repository folder. Extract the repository ZIP first if you downloaded it from GitHub. Python 3.11 or newer must already be installed; no packages, server, or internet connection are needed to run the demo.
 
-If the browser does not open, double-click `results/animation.html` manually. You can keep or share that single HTML file; recipients only need a modern browser, with JavaScript enabled. It does not require Python once generated. If an in-app preview cannot open or scroll the file, open the HTML in your normal browser.
+If the browser does not open, double-click `results/operations-dashboard.html` manually. You can keep or share that single HTML file; recipients only need a modern browser, with JavaScript enabled. It does not require Python once generated. If an in-app preview cannot open or scroll the file, open the HTML in your normal browser.
 
-To generate without opening a browser: `python simulation/start.py --no-open`. The launcher always writes to the repository's `results` folder even when run from another folder. The advanced exporter `python simulation/animate.py` still supports seed, map count, fault tick and output options.
+To generate without opening a browser: `python simulation/start.py --no-open`. The launcher always writes to the repository's `results` folder even when run from another folder. For the previous full-featured replay, run `python simulation/start.py --detailed-replay` (or use `--output results/animation.html` to keep a separate filename). The advanced exporter `python simulation/animate.py` still supports seed, map count, fault tick and output options.
 
-The separate operations dashboard is generated from the same canonical Python model: run `python presentation/build.py`, then open `presentation/index.html`. Rebuild it after any simulation-model changes so the embedded route and event data stay in sync. Its browser controls only play back the recorded events.
+The operations dashboard is generated from the same canonical Python model: run `python presentation/build.py`, then open `presentation/index.html`. Rebuild it after any simulation-model changes so the embedded route and event data stay in sync. Its browser controls only play back the recorded events.
 
 The main view keeps Play, Reset, New map, the stop buttons and the robot together. Expand **Playback tools** for Step, speed and seeking. Expand **Choose, save or load a map** for the full map list and files. On narrow screens, scroll sideways within the editing grid. Keyboard users can tab to controls and use arrow keys between editable cells. PAUSED indicates a replay with moves that is currently paused.
 
