@@ -9,6 +9,7 @@
 - Reviewed merged PR #24 and PR #25. They introduced a polished but separate scripted dashboard and documented that it was not connected to the Python simulation.
 - Replaced that illustrative dashboard behavior with an embedded, reproducible export from `simulation/sim.py`. The displayed grid, route events, scenario status, move counts, positions and fault outcomes now come directly from the canonical deterministic model.
 - Added `presentation/build.py` and regression tests that compare each dashboard scenario against simulator results at early, default and late fault ticks. The browser is a view and playback controller for recorded events; it does not run another planner or inject separate faults.
+- Made the operations dashboard the default Windows and command-line launch experience. The previous full-featured replay remains available with `python simulation/start.py --detailed-replay`.
 - Preserved the offline model's inert scope and made its status visible in the dashboard, including explicit limits around physical capability, sensors, actuators, stopping performance and certification.
 
 - PR #11 added four validation gates that distinguish deterministic software checks from safety properties, user-facing review, and any future physical research.

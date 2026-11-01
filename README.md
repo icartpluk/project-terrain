@@ -7,13 +7,13 @@ A research and engineering proposal exploring whether modified Tesla Optimus hum
 **Status:** Concept proposal; not an operational plan, Tesla affiliation, or demonstrated capability.
 
 ## Watch the grid simulation
-On Windows, double-click **START-DEMO.bat** after downloading and extracting the repository. Or run `python simulation/start.py` on any platform to generate the offline animation and open it in your browser. Python 3.11 or newer is required to generate it; the resulting HTML file opens on its own without Python. See [local run instructions and controls](simulation/README.md) for navigation and safety-stop scenarios. No third-party packages are required.
+On Windows, double-click **START-DEMO.bat** after downloading and extracting the repository. Or run `python simulation/start.py` on any platform to generate the operations dashboard at `results/operations-dashboard.html` and open it in your browser. Python 3.11 or newer is required to generate it; the resulting HTML file opens on its own without Python. For the full-featured replay with seeded maps, map editing and limited-view exploration, run `python simulation/start.py --detailed-replay`. See [local run instructions and controls](simulation/README.md). No third-party packages are required.
 
-The offline replay also includes a separate limited-view exploration panel. It advances through deterministic, precomputed observation frames, marks unseen cells with `?`, and uses abstract grid cells and a scripted map change. It does not model real sensors, physical obstacle motion, or robot control.
+The detailed replay includes a limited-view exploration panel. It advances through deterministic, precomputed observation frames, marks unseen cells with `?`, and uses abstract grid cells and a scripted map change. It does not model real sensors, physical obstacle motion, or robot control.
 
 ## Operations dashboard
 
-Open [`presentation/index.html`](presentation/index.html) in a modern browser to explore the responsive operations dashboard. Its embedded map and event history are generated from the deterministic Python model; the browser only displays recorded results and does not plan routes or invent fault behavior. To rebuild it after changing the simulator, run `python presentation/build.py`. The dashboard remains an inert software demonstration: it does not model hardware capability, sensors, actuators, physical stopping, or safety certification.
+The default launcher uses [`presentation/index.html`](presentation/index.html), a responsive operations dashboard generated from the deterministic Python model. The browser displays recorded results and does not plan routes or invent fault behavior. Rebuild the checked-in page after changing the simulator with `python presentation/build.py`. The dashboard remains an inert software demonstration: it does not model hardware capability, sensors, actuators, physical stopping, or safety certification.
 
 ## Project documents
 - [Original proposal — preserved wording](docs/original-proposal.md)
