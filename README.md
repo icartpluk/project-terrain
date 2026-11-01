@@ -11,9 +11,9 @@ On Windows, double-click **START-DEMO.bat** after downloading and extracting the
 
 The offline replay also includes a separate limited-view exploration panel. It advances through deterministic, precomputed observation frames, marks unseen cells with `?`, and uses abstract grid cells and a scripted map change. It does not model real sensors, physical obstacle motion, or robot control.
 
-## Presentation prototype
+## Operations dashboard
 
-Open [`presentation/index.html`](presentation/index.html) in a modern browser to explore a separate, responsive operations-console **visual prototype**. It is an illustrative scripted replay, **not connected to the validated simulation engine**. Use the Python-generated animation above for actual model events and testing. The presentation does not model hardware, sensors, physical stopping, or safety certification.
+Open [`presentation/index.html`](presentation/index.html) in a modern browser to explore the responsive operations dashboard. Its embedded map and event history are generated from the deterministic Python model; the browser only displays recorded results and does not plan routes or invent fault behavior. To rebuild it after changing the simulator, run `python presentation/build.py`. The dashboard remains an inert software demonstration: it does not model hardware capability, sensors, actuators, physical stopping, or safety certification.
 
 ## Project documents
 - [Original proposal — preserved wording](docs/original-proposal.md)

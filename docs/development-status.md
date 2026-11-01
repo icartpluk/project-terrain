@@ -1,10 +1,15 @@
 # Development status and next steps
 
-**Reviewed:** 2026-10-31  
-**Scope:** Inert, offline grid simulation and conceptual engineering only.  
+**Reviewed:** 2026-11-01
+**Scope:** Inert, offline grid simulation and conceptual engineering only.
 **Phase status:** Complete — the current offline simulation, validation, and browser-usability scope is finished. Physical research remains outside this phase and its oversight gate is not satisfied.
 
 ## Progress
+
+- Reviewed merged PR #24 and PR #25. They introduced a polished but separate scripted dashboard and documented that it was not connected to the Python simulation.
+- Replaced that illustrative dashboard behavior with an embedded, reproducible export from `simulation/sim.py`. The displayed grid, route events, scenario status, move counts, positions and fault outcomes now come directly from the canonical deterministic model.
+- Added `presentation/build.py` and regression tests that compare each dashboard scenario against simulator results at early, default and late fault ticks. The browser is a view and playback controller for recorded events; it does not run another planner or inject separate faults.
+- Preserved the offline model's inert scope and made its status visible in the dashboard, including explicit limits around physical capability, sensors, actuators, stopping performance and certification.
 
 - PR #11 added four validation gates that distinguish deterministic software checks from safety properties, user-facing review, and any future physical research.
 - The timing model has regression coverage for all modeled fault types at each motion tick, zero and asymmetric delays, and the maximum supported delays.
@@ -16,6 +21,9 @@
 - PR #15 added the limited-observation Python model; PR #17 integrated it into the offline browser demo with deterministic Python/browser parity checks. Ubuntu and Windows checks passed before merge.
 
 ## Current limits and unresolved work
+
+- The new presentation dashboard is generated from the simulator's fixed grid and deterministic scenario output. It is a static recorded replay; changing the model requires rebuilding the dashboard with `python presentation/build.py`.
+- Its Play, Step and Reset controls only change which already-recorded event is visible; the browser does not create new simulation results.
 
 - The partial-observation experiment is integrated into the offline browser replay as a separate, deterministic scenario. The browser receives only recorded known-map frames, not the hidden map or obstacle schedule; controls are native step and reset buttons.
 - The partial-observation scenario uses abstract grid cells and ticks, a fixed observation radius, and a supplied event schedule; it does not model sensor physics, physical obstacle motion, braking, collisions, or hardware.
