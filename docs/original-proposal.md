@@ -19,9 +19,7 @@ This text was entered during repository setup as a reconstruction of the October
 > The immediate challenge is recovering dangerous materials without risking American lives. The long-term opportunity is developing robots capable of preparing Mars for human habitation.
 >
 > Thank you for your time and vision.
->
-> Sincerely,
->
+
 
 
 
