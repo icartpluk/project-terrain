@@ -9,6 +9,7 @@
 - Reviewed merged PR #24 and PR #25. They introduced a polished but separate scripted dashboard and documented that it was not connected to the Python simulation.
 - Replaced that illustrative dashboard behavior with an embedded, reproducible export from `simulation/sim.py`. The displayed grid, route events, scenario status, move counts, positions and fault outcomes now come directly from the canonical deterministic model.
 - Added `presentation/build.py` and regression tests that compare each dashboard scenario against simulator results at early, default and late fault ticks. The browser is a view and playback controller for recorded events; it does not run another planner or inject separate faults.
+- Added an environment selector for the original grid and a reproducible bank of seeded maps; every map and scenario result is precomputed by the existing Python generator and simulator.
 - Made the operations dashboard the default Windows and command-line launch experience. The previous full-featured replay remains available with `python simulation/start.py --detailed-replay`.
 - Preserved the offline model's inert scope and made its status visible in the dashboard, including explicit limits around physical capability, sensors, actuators, stopping performance and certification.
 
@@ -23,7 +24,7 @@
 
 ## Current limits and unresolved work
 
-- The new presentation dashboard is generated from the simulator's fixed grid and deterministic scenario output. It is a static recorded replay; changing the model requires rebuilding the dashboard with `python presentation/build.py`.
+- The presentation dashboard embeds the original grid and up to 100 seeded environments with precomputed scenario results. It is a static recorded replay; changing the model or seed bank requires rebuilding it with `python presentation/build.py`.
 - Its Play, Step and Reset controls only change which already-recorded event is visible; the browser does not create new simulation results.
 
 - The partial-observation experiment is integrated into the offline browser replay as a separate, deterministic scenario. The browser receives only recorded known-map frames, not the hidden map or obstacle schedule; controls are native step and reset buttons.

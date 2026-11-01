@@ -31,19 +31,29 @@ vm.runInNewContext(script, {document, clearInterval, setInterval}, {timeout: 100
 
 const get = id => elements.get(id);
 assert.equal(get("scenario").children.length, 4);
-assert.equal(get("events").children.length, payload.trials[0].events.length);
+assert.equal(get("world").children.length, payload.worlds.length);
+assert.equal(get("events").children.length, payload.worlds[0].trials[0].events.length);
+assert.equal(get("map").children.length, payload.worlds[0].grid.length * payload.worlds[0].grid[0].length);
 assert.equal(get("status-line").textContent, "READY");
+
+get("world").value = "1";
+get("world").listeners.change();
+assert.equal(get("map").children.length, payload.worlds[1].grid.length * payload.worlds[1].grid[0].length);
+assert.ok(get("provenance").textContent.includes(`seed ${payload.worlds[1].seed}`));
+get("world").value = "0";
+get("world").listeners.change();
 
 get("scenario").value = "1";
 get("scenario").listeners.change();
-assert.equal(get("events").children.length, payload.trials[1].events.length);
-for (let i = 0; i < payload.trials[1].events.length; i++) get("step").listeners.click();
+const trial = payload.worlds[0].trials[1];
+assert.equal(get("events").children.length, trial.events.length);
+for (let i = 0; i < trial.events.length; i++) get("step").listeners.click();
 assert.equal(get("status-line").textContent, "SAFE STOP · COMMUNICATION LOSS");
-assert.equal(String(get("tick-value").textContent), String(payload.trials[1].events.at(-1).tick));
-assert.equal(get("position").textContent, payload.trials[1].final_position.join(", "));
+assert.equal(String(get("tick-value").textContent), String(trial.events.at(-1).tick));
+assert.equal(get("position").textContent, trial.final_position.join(", "));
 assert.equal(get("play").disabled, true);
 
 get("reset").listeners.click();
 assert.equal(get("tick-value").textContent, "0");
 assert.equal(get("status-line").textContent, "READY");
-console.log("Dashboard playback checks passed: scenario selection, recorded stop, reset and telemetry.");
+console.log("Dashboard playback checks passed: seeded environment selection, recorded stop, reset and telemetry.");

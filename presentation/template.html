@@ -9,13 +9,13 @@
     :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#edf4fa;background:#07111d;font-synthesis:none;text-rendering:optimizeLegibility;--panel:#0d1b2a;--panel-2:#102338;--line:#233a50;--muted:#9ab0c4;--cyan:#58c8e8;--green:#67d4a0;--amber:#f2bf62;--red:#ff7379}
     *{box-sizing:border-box}body{margin:0;min-width:320px;background:radial-gradient(ellipse at 50% -15%,#19314b 0,transparent 48%),#07111d}button,select{font:inherit}button:focus-visible,select:focus-visible{outline:3px solid #f2bf62;outline-offset:3px}
     .shell{max-width:1440px;margin:auto;padding:24px clamp(14px,3vw,42px) 30px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:22px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:14px}.mark{width:42px;height:42px;border:1px solid #3c708a;border-radius:12px;display:grid;place-items:center;color:var(--cyan);font-weight:800;letter-spacing:-.08em;background:#0c2233}.eyebrow,.label{font-size:.69rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}h1{font-size:1.08rem;letter-spacing:.15em;margin:0 0 4px}.subtitle{font-size:.82rem;color:var(--muted)}.badge{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #375a70;border-radius:999px;background:#0b1e2e;color:#bcecf6;font-size:.7rem;font-weight:750;letter-spacing:.1em}.dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px #58c8e8}
-    .notice{display:flex;gap:12px;align-items:flex-start;margin:20px 0;padding:14px 16px;border:1px solid #765b2c;border-radius:12px;background:#201b12;color:#f4dfb3;font-size:.82rem;line-height:1.5}.notice strong{color:#ffe2a2}.notice-icon{font-size:1rem;color:var(--amber)}.heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:24px 0 12px}.heading h2{font-size:.86rem;letter-spacing:.13em;text-transform:uppercase;margin:0}.heading p{margin:5px 0 0;color:var(--muted);font-size:.78rem}.scenario-control{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:.78rem}.scenario-control select{min-height:42px;max-width:100%;padding:0 34px 0 12px;color:#eef6fc;background:#0e2030;border:1px solid #35516a;border-radius:8px}
+    .notice{display:flex;gap:12px;align-items:flex-start;margin:20px 0;padding:14px 16px;border:1px solid #765b2c;border-radius:12px;background:#201b12;color:#f4dfb3;font-size:.82rem;line-height:1.5}.notice strong{color:#ffe2a2}.notice-icon{font-size:1rem;color:var(--amber)}.heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:24px 0 12px}.heading h2{font-size:.86rem;letter-spacing:.13em;text-transform:uppercase;margin:0}.heading p{margin:5px 0 0;color:var(--muted);font-size:.78rem}.scenario-control{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.78rem}.scenario-control label{display:grid;gap:6px;min-width:180px}.scenario-control select{min-height:42px;width:100%;max-width:100%;padding:0 34px 0 12px;color:#eef6fc;background:#0e2030;border:1px solid #35516a;border-radius:8px}
     .dashboard{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.9fr);gap:16px}.panel{background:linear-gradient(145deg,#0e1e2e,#0a1725);border:1px solid var(--line);border-radius:15px;box-shadow:0 16px 50px #02091240;overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:17px 19px;border-bottom:1px solid #1e3347}.panel-head h3{margin:0;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase}.panel-head .meta{color:var(--muted);font-size:.72rem}.map-wrap{padding:16px 18px 10px}.map{display:grid;gap:4px;width:min(100%,720px);margin:auto}.cell{aspect-ratio:1;min-width:0;position:relative;display:grid;place-items:center;border:1px solid #284258;border-radius:5px;background:#122638;color:#9fb5c8;font-size:clamp(.42rem,1vw,.72rem);font-weight:750}.cell.wall{background:#07121c;border-color:#142a3d}.cell.visited{background:#103b4b;border-color:#1d5467}.cell.start{color:#acd7ec}.cell.goal{background:#1c3b32;border-color:#2e7359;color:#88e2b1}.cell.robot{background:#4ac4e5;border-color:#b5f3ff;color:#061521;box-shadow:0 0 18px #44c8e877;z-index:1}.cell.stopped{background:#8c3439;border-color:#ff989c;color:white}.map-legend{display:flex;flex-wrap:wrap;gap:16px;padding:5px 20px 16px;color:#a6bbce;font-size:.72rem}.key{display:flex;align-items:center;gap:7px}.swatch{width:11px;height:11px;border-radius:3px;background:#122638;border:1px solid #284258}.swatch.wall{background:#07121c}.swatch.route{background:#103b4b}.swatch.robot{background:#4ac4e5;border-color:#b5f3ff}.swatch.goal{background:#1c3b32;border-color:#2e7359}
     .playback{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:14px 18px;border-top:1px solid #1e3347}.playback button{min-height:42px;padding:0 15px;border-radius:8px;border:1px solid #35546c;color:#dcebf5;background:#132b3e;font-weight:700;cursor:pointer}.playback button:hover:not(:disabled){background:#1d4058}.playback button.primary{background:#48b9d9;border-color:#48b9d9;color:#061521}.playback button:disabled{opacity:.45;cursor:not-allowed}.playback .spacer{flex:1}.tick-readout{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.76rem}.progress{height:3px;background:#162a3c}.progress>span{display:block;height:100%;background:var(--cyan);transition:width .18s ease}
     .telemetry{padding:18px}.status-block{padding:14px 15px;border:1px solid #27627a;border-left:3px solid var(--cyan);border-radius:9px;background:#0b2332;margin-bottom:15px}.status-block.stop{border-color:#85373c;border-left-color:var(--red);background:#29191e}.status-block.done{border-color:#28614d;border-left-color:var(--green);background:#10271f}.status-block.noroute{border-color:#765b2c;border-left-color:var(--amber);background:#201b12}.status-line{display:flex;align-items:center;gap:9px;font-size:.86rem;font-weight:800;letter-spacing:.04em}.status-description{margin-top:6px;color:#a9c0d2;font-size:.73rem;line-height:1.45}.status-block.stop .status-line{color:#ffb5b8}.status-block.done .status-line{color:#9ae7bd}.status-block.noroute .status-line{color:#f4dfb3}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{min-height:85px;padding:12px;border:1px solid #1d3448;border-radius:9px;background:#0a1826}.stat .label{font-size:.62rem}.stat b{display:block;margin-top:9px;font-size:1.08rem;font-variant-numeric:tabular-nums}.stat small{font-size:.68rem;color:var(--muted)}.event-box{margin-top:16px}.event-box h4{display:flex;justify-content:space-between;margin:0 0 8px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}.event-box h4 span{font-weight:500;color:var(--muted);letter-spacing:0;text-transform:none}.event-list{max-height:175px;overflow:auto;margin:0;padding:0;list-style:none;border-top:1px solid #1d3448}.event-list li{display:grid;grid-template-columns:52px 1fr auto;gap:9px;align-items:center;padding:9px 2px;border-bottom:1px solid #172b3c;font-size:.72rem}.event-tick{color:var(--muted);font-variant-numeric:tabular-nums}.event-name{font-weight:700}.event-position{color:#9db4c7;font-variant-numeric:tabular-nums}.event-list li.current{color:#b8edfa}.event-list li.stop-event .event-name{color:#ff969a}.empty-events{padding:14px 2px;color:var(--muted);font-size:.74rem;line-height:1.45}
     .provenance{margin-top:16px;padding:12px 14px;border:1px solid #1e3447;border-radius:10px;background:#091724;color:var(--muted);font-size:.72rem;line-height:1.55}.provenance strong{color:#d1e0ec}.footer{display:flex;justify-content:space-between;gap:14px;margin-top:20px;color:#839aae;font-size:.69rem;line-height:1.5}.footer span:last-child{text-align:right}
     @media(max-width:900px){.dashboard{grid-template-columns:1fr}.telemetry{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px}.status-block,.stats{align-self:start}.event-box,.provenance{grid-column:1/-1}.event-list{max-height:140px}}
-    @media(max-width:560px){.shell{padding-top:15px}.topbar{align-items:flex-start;flex-direction:column}.badge{align-self:flex-start}.heading{align-items:flex-start;flex-direction:column}.scenario-control{width:100%;align-items:flex-start;flex-direction:column}.scenario-control select{width:100%}.map-wrap{padding:11px 10px 6px}.map{gap:2px}.cell{border-radius:3px}.map-legend{gap:9px;padding:5px 12px 12px;font-size:.65rem}.playback{padding:11px 12px;gap:7px}.playback button{padding:0 11px;min-height:44px}.playback .spacer{display:none}.tick-readout{margin-left:auto}.telemetry{display:block;padding:13px}.footer{flex-direction:column}.footer span:last-child{text-align:left}}
+    @media(max-width:560px){.shell{padding-top:15px}.topbar{align-items:flex-start;flex-direction:column}.badge{align-self:flex-start}.heading{align-items:flex-start;flex-direction:column}.scenario-control{width:100%;align-items:flex-start;flex-direction:column}.scenario-control label{width:100%}.scenario-control select{width:100%}.map-wrap{padding:11px 10px 6px}.map{gap:2px}.cell{border-radius:3px}.map-legend{gap:9px;padding:5px 12px 12px;font-size:.65rem}.playback{padding:11px 12px;gap:7px}.playback button{padding:0 11px;min-height:44px}.playback .spacer{display:none}.tick-readout{margin-left:auto}.telemetry{display:block;padding:13px}.footer{flex-direction:column}.footer span:last-child{text-align:left}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
@@ -30,7 +30,7 @@
       <div><strong>Simulation only.</strong> This dashboard displays events recorded by Project TERRAIN’s deterministic Python grid model. It does not represent physical robot capability, sensors, actuators, braking performance, or safety certification.</div>
     </aside>
     <section aria-labelledby="demo-heading">
-      <div class="heading"><div><h2 id="demo-heading">Operations view</h2><p>Recorded model state, route and event history</p></div><label class="scenario-control">Simulation scenario<select id="scenario" aria-label="Simulation scenario"></select></label></div>
+      <div class="heading"><div><h2 id="demo-heading">Operations view</h2><p>Recorded model state, route and event history</p></div><div class="scenario-control"><label>Environment<select id="world" aria-label="Simulation environment"></select></label><label>Scenario<select id="scenario" aria-label="Simulation scenario"></select></label></div></div>
       <div class="dashboard">
         <section class="panel" aria-labelledby="map-heading">
           <div class="panel-head"><h3 id="map-heading">Environment map</h3><span class="meta" id="map-meta"></span></div>
@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="event-box"><h4>Recorded events <span id="event-count"></span></h4><ol id="events" class="event-list" aria-label="Recorded simulation events"></ol></div>
-            <div class="provenance"><strong>Data provenance</strong><br>Generated from <code>simulation/sim.py</code> using its fixed grid and deterministic scenario rules. The browser only displays the embedded result; it does not plan routes or invent fault behavior.<br><span id="provenance"></span></div>
+            <div class="provenance"><strong>Data provenance</strong><br>Generated by the existing Python grid generator and <code>simulation/sim.py</code>. The browser only displays embedded results; it does not generate environments, plan routes, or invent fault behavior.<br><span id="provenance"></span></div>
           </div>
         </section>
       </div>
@@ -63,7 +63,7 @@
   <script>
     "use strict";
     const payload = JSON.parse(document.getElementById("simulation-data").textContent);
-    const scenarios = payload.trials;
+    const worlds = payload.worlds;
     const labels = {normal:"Normal navigation",link_loss:"Communication loss",estop:"Emergency stop",unauthorized:"Unauthorized command"};
     const eventLabels = {MOVE:"MOVE",COMMUNICATION_LOSS:"COMMUNICATION LOSS",EMERGENCY_STOP:"EMERGENCY STOP",UNAUTHORIZED_COMMAND:"UNAUTHORIZED COMMAND"};
     const descriptions = {
@@ -73,27 +73,34 @@
       NO_ROUTE:"The model found no route to the destination; no movement events were recorded."
     };
     const el = id => document.getElementById(id);
-    let trialIndex = 0, eventIndex = 0, timer = null;
-    scenarios.forEach((trial, index) => {
+    let worldIndex = 0, trialIndex = 0, eventIndex = 0, timer = null;
+    worlds.forEach((world, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = world.label;
+      el("world").append(option);
+    });
+    worlds[0].trials.forEach((trial, index) => {
       const option = document.createElement("option");
       option.value = String(index);
       option.textContent = labels[trial.scenario] || trial.scenario;
       el("scenario").append(option);
     });
-    function selectedTrial(){return scenarios[trialIndex];}
+    function selectedWorld(){return worlds[worldIndex];}
+    function selectedTrial(){return selectedWorld().trials[trialIndex];}
     function currentEvent(){return eventIndex ? selectedTrial().events[eventIndex-1] : null;}
     function stopPlayback(){if(timer!==null){clearInterval(timer);timer=null;}el("play").textContent="Play";}
     function render(){
-      const trial=selectedTrial(), event=currentEvent(), position=event?event.position:payload.start;
+      const world=selectedWorld(), trial=selectedTrial(), event=currentEvent(), position=event?event.position:world.start;
       const complete=eventIndex>=trial.events.length;
       const stopped=trial.status==="SAFE_STOP" && complete;
       const reached=trial.status==="GOAL_REACHED" && complete;
       const noRoute=trial.status==="NO_ROUTE";
-      el("map-meta").textContent=`${payload.grid[0].length} × ${payload.grid.length} cells · fixed model map`;
-      el("map").style.gridTemplateColumns=`repeat(${payload.grid[0].length},minmax(0,1fr))`;
+      el("map-meta").textContent=`${world.label} · ${world.grid[0].length} × ${world.grid.length} cells`;
+      el("map").style.gridTemplateColumns=`repeat(${world.grid[0].length},minmax(0,1fr))`;
       el("map").replaceChildren();
       const visited=new Set(trial.events.slice(0,eventIndex).filter(item=>item.event==="MOVE").map(item=>`${item.position[0]},${item.position[1]}`));
-      payload.grid.forEach((row,y)=>[...row].forEach((cell,x)=>{
+      world.grid.forEach((row,y)=>[...row].forEach((cell,x)=>{
         const node=document.createElement("div"), here=position[0]===x&&position[1]===y;
         node.className="cell"+(cell==="#"?" wall":"")+(visited.has(`${x},${y}`)?" visited":"")+(cell==="S"?" start":"")+(cell==="G"?" goal":"")+(here?(stopped?" stopped":" robot"):"");
         node.textContent=here?(stopped?"STOP":"R"):cell==="S"?"S":cell==="G"?"G":"";
@@ -123,9 +130,11 @@
         row.append(tick,name,loc);list.append(row);
       });
       el("event-count").textContent=`${trial.events.length} total`;
-      el("provenance").textContent=`Scenario: ${trial.scenario} · Fault tick: ${payload.fault_tick} · ${payload.model}`;
+      const seedLabel=world.seed===null?"fixed original grid":`seed ${world.seed}`;
+      el("provenance").textContent=`Environment: ${seedLabel} · Scenario: ${trial.scenario} · Fault tick: ${world.fault_tick} · ${payload.model}`;
     }
     function advance(){if(eventIndex<selectedTrial().events.length)eventIndex++;render();if(eventIndex>=selectedTrial().events.length)stopPlayback();}
+    el("world").addEventListener("change",()=>{stopPlayback();worldIndex=Number(el("world").value);eventIndex=0;render();});
     el("scenario").addEventListener("change",()=>{stopPlayback();trialIndex=Number(el("scenario").value);eventIndex=0;render();});
     el("step").addEventListener("click",()=>{stopPlayback();advance();});
     el("reset").addEventListener("click",()=>{stopPlayback();eventIndex=0;render();});
