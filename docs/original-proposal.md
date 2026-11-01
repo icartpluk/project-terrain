@@ -1,4 +1,4 @@
-# Project TERRAIN — earlier proposal reconstruction (verification pending)
+# Project TERRAIN — earlier proposal reconstruction
 
 This text was entered during repository setup as a reconstruction of the October 23, 2026 discussion. **It has not been verified against the original spoken transcript and must not be described as verbatim.** The original wording should be recovered and checked before treating this file as an archival record. The text below is retained unchanged pending that verification.
 
