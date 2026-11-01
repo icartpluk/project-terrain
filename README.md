@@ -13,6 +13,8 @@ The detailed replay includes a limited-view exploration panel. It advances throu
 
 ## Operations dashboard
 
+**[Open the live dashboard](https://icartpluk.github.io/project-terrain/)** on desktop or mobile.
+
 The default launcher uses [`presentation/index.html`](presentation/index.html), a responsive operations dashboard generated from the deterministic Python model. Select the original grid or a seeded environment, then inspect the recorded result for each scenario. The browser displays precomputed results; it does not generate maps, plan routes, or invent fault behavior. Rebuild the checked-in page after changing the simulator with `python presentation/build.py` (use `--seed` and `--maps` to choose a repeatable seed bank). The dashboard remains an inert software demonstration: it does not model hardware capability, sensors, actuators, physical stopping, or safety certification.
 
 ## Project documents
