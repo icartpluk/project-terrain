@@ -90,3 +90,25 @@ CI also checks the JavaScript playback controller with Node.js and a minimal DOM
 
 See [PROTOTYPE.md](PROTOTYPE.md) and [RANDOMIZED.md](RANDOMIZED.md) for the underlying model and reports. All positions and times are idealized grid cells and ticks; the animation demonstrates software behavior, not physical stopping performance. Only inert objects and generic environments are modeled.
 
+
+## Test your own deterministic seeds (Issue #31)
+
+The standard launcher can now generate a custom bank of seeded maps for either
+the operations dashboard or the detailed replay. For example:
+
+```sh
+python simulation/start.py --seed 42 --maps 3 --fault-tick 2 --no-open --output results/seed-42.html
+python simulation/start.py --detailed-replay --seed 42 --maps 3 --fault-tick 2 --no-open --output results/seed-42-detailed.html
+```
+
+Open the generated HTML file in a browser. The original demo is included alongside
+three new maps (seeds 42, 43 and 44). Reusing the same seed, map count and fault tick
+reproduces the same maps and recorded outcomes. `--maps` accepts 1–100, and
+`--fault-tick` must be at least 1. Use a different output filename to preserve
+earlier experiments. The hosted GitHub Pages dashboard remains a precomputed
+static artifact: these commands run locally and do not modify the public website.
+
+For a custom hand-edited layout, use the detailed replay's **Edit this map**
+and **Save map** controls described above. This is an inert, abstract grid model;
+seed changes do not establish physical safety or hardware behavior.
+
